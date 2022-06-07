@@ -45,6 +45,24 @@ void Iot_Com::procces()
     //----------------------
 }
 /******************************************************/
+Iot_ZoneError_t get_zone_error(Zone_t zone)
+{
+
+    return ZONE_NO_ERROR;    
+}
+/******************************************************/
+Iot_DeviceStatus_t Iot_Com::get_device_status()
+{
+
+    return device_st;
+}
+/******************************************************/
+Iot_CommandStatus_t Iot_Com::get_command_status()
+{
+
+    return command_st;
+}
+/******************************************************/
 void Iot_Com::power_on()
 {
     key_push(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG), KEY_TIME_MS(300));
