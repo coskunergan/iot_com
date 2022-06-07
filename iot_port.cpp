@@ -45,7 +45,7 @@ void Iot_Com::procces()
     //----------------------
 }
 /******************************************************/
-Iot_ZoneError_t get_zone_error(Zone_t zone)
+Iot_ZoneErrors_t get_zone_error(Zone_t zone)
 {
 
     return ZONE_NO_ERROR;    
@@ -54,13 +54,13 @@ Iot_ZoneError_t get_zone_error(Zone_t zone)
 Iot_DeviceStatus_t Iot_Com::get_device_status()
 {
 
-    return device_st;
+    return device_status;
 }
 /******************************************************/
 Iot_CommandStatus_t Iot_Com::get_command_status()
 {
 
-    return command_st;
+    return command_status;
 }
 /******************************************************/
 void Iot_Com::power_on()
