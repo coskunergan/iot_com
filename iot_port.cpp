@@ -27,29 +27,58 @@ void Iot_Com::procces()
         switch(RxCount)
         {
             case 0:
+                api_version = temp;
+                if(api_version != API_VERSION)
+                {
+                    device_status = UNSUPPORTED_API;
+                }
+                break;
             case 1:
+                device_type = (DeviceType_t)temp;
+                if(device_type != DEVICE_TYPE)
+                {
+                    device_status = UNSUPPORTED_DEVICE;
+                }
+                break;
             case 2:
             case 3:
             case 4:
             case 5:
-                DisplayBuffer[RxCount] = temp;
-                break;
             case 6:
-                KeyFeedback = temp;
-                break;
             case 7:
-                KeyFeedback |= ((uint32_t)temp << 8);
+                DisplayBuffer[RxCount - 2] = temp;
                 break;
             case 8:
-                KeyFeedback |= ((uint32_t)temp << 16);
+                KeyFeedback = temp;
                 break;
             case 9:
+                KeyFeedback |= ((uint32_t)temp << 8);
+                break;
+            case 10:
+                KeyFeedback |= ((uint32_t)temp << 16);
+                break;
+            case 11:
                 KeyFeedback |= ((uint32_t)temp << 24);
                 break;
             default:
                 break;
         }
         RxCount++;
+        if((device_status != UNSUPPORTED_API) && (device_status != UNSUPPORTED_DEVICE))
+        {
+            if(DisplayBuffer[0] == 0x9) // PAUSE KEY
+            {
+                device_status = DEVICE_PAUSE;
+            }
+            else if(DisplayBuffer[0] | DisplayBuffer[1] | DisplayBuffer[2] | DisplayBuffer[3])
+            {
+                device_status = DEVICE_ON;
+            }
+            else
+            {
+                device_status = DEVICE_OFF;
+            }
+        }
     }
     //----------------------
     uint32_t currentMillis = millis();
@@ -73,14 +102,12 @@ Iot_ZoneErrors_t get_zone_error(Zone_t zone)
 /******************************************************/
 Iot_DeviceStatus_t Iot_Com::get_device_status()
 {
-
     return device_status;
 }
 /******************************************************/
-uint8_t Iot_Com::get_command_status()
+Iot_CommandStatus_t Iot_Com::get_command_status()
 {
-    return key_count();
-    //return command_status;
+    return command_status;
 }
 /******************************************************/
 void Iot_Com::power_on()
@@ -96,7 +123,6 @@ void Iot_Com::power_off()
 void Iot_Com::set_level(Zone_t zone, Level_t level)
 {
     key_push(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
-    //key_push(KEY_BITS(KEY_ZONE1 + zone));
     switch(level)
     {
         case LEVEL_0:
@@ -133,7 +159,6 @@ void Iot_Com::set_level(Zone_t zone, Level_t level)
             key_push(KEY_BITS(KEY_BOOST));
             break;
     }
-    //key_push(KEY_BITS(KEY_ZONE1 + zone));
 }
 /******************************************************/
 /******************************************************/

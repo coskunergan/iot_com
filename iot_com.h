@@ -12,11 +12,12 @@
 
 #include <Wire.h>
 
-#define LIB_VERSION           0x100
+#define API_VERSION           100 // V1.0.0
+#define DEVICE_TYPE           I6S02B
 #define KEY_TIME_TICK_MS      150
-#define DISPLAY_TIME_TICK_MS  50
-#define KEY_LIST_SIZE         32
-#define GET_BYTE_COUNT        10
+#define DISPLAY_TIME_TICK_MS   50
+#define KEY_LIST_SIZE          32
+#define GET_BYTE_COUNT         12
 
 #define   KEY_ZONE1    3
 #define   KEY_ZONE2    4
@@ -37,6 +38,12 @@
 
 #define KEY_BITS(x)  (1 << (x - 1))
 #define KEY_TIME_MS(x)  (x / 30)
+
+typedef enum
+{
+    I6S02B = 1,
+    I9S02B = 2
+} DeviceType_t;
 
 typedef enum
 {
@@ -79,10 +86,13 @@ typedef enum
 
 typedef enum
 {
-    DEVICE_OFF = 0,
+    DEVICE_LOST = 0,
+    DEVICE_OFF,
     DEVICE_ON,
     DEVICE_LOCK,
-    DEVICE_PAUSE
+    DEVICE_PAUSE,
+    UNSUPPORTED_DEVICE,
+    UNSUPPORTED_API
 } Iot_DeviceStatus_t;
 
 typedef enum
@@ -107,12 +117,14 @@ private:
     void key_send(uint32_t keys);
     void display_procces();
 public:
+    uint8_t api_version;
+    DeviceType_t device_type;
     Iot_Com(uint8_t addr, uint16_t pin_sda, uint16_t pin_clk);
     void init();
     void procces();
     Iot_ZoneErrors_t get_zone_error(Zone_t zone);
     Iot_DeviceStatus_t get_device_status();
-    uint8_t get_command_status();
+    Iot_CommandStatus_t get_command_status();
     void power_on();
     void power_off();
     void set_level(Zone_t zone, Level_t level);
