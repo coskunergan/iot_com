@@ -13,9 +13,10 @@
 #include <Wire.h>
 
 #define LIB_VERSION           0x100
-#define KEY_TIME_TICK_MS      50
-#define DISPLAY_TIME_TICK_MS  100
+#define KEY_TIME_TICK_MS      150
+#define DISPLAY_TIME_TICK_MS  50
 #define KEY_LIST_SIZE         32
+#define GET_BYTE_COUNT        10
 
 #define   KEY_ZONE1    3
 #define   KEY_ZONE2    4
@@ -51,6 +52,22 @@ typedef enum
 
 typedef enum
 {
+    LEVEL_0 = 0,
+    LEVEL_1,
+    LEVEL_2,
+    LEVEL_3,
+    LEVEL_4,
+    LEVEL_5,
+    LEVEL_6,
+    LEVEL_7,
+    LEVEL_8,
+    LEVEL_9,
+    LEVEL_B,
+    LEVEL_DB
+} Level_t;
+
+typedef enum
+{
     ZONE_NO_ERROR = 0x00,
     ZONE_ERROR_F1 = 0x01, //  Data Communication fail
     ZONE_ERROR_E3 = 0x02, //  High voltahe
@@ -83,8 +100,10 @@ private:
     Iot_CommandStatus_t command_status;
     Iot_ZoneErrors_t zone_errors;
     void key_procces();
-    bool key_pop(uint32_t *key, uint8_t *time);
-    bool key_push(uint32_t key, uint8_t time);
+    uint8_t key_count();
+    bool key_get(uint32_t *key);
+    bool key_pop();
+    bool key_push(uint32_t key);
     void key_send(uint32_t keys);
     void display_procces();
 public:
@@ -93,8 +112,9 @@ public:
     void procces();
     Iot_ZoneErrors_t get_zone_error(Zone_t zone);
     Iot_DeviceStatus_t get_device_status();
-    Iot_CommandStatus_t get_command_status();
+    uint8_t get_command_status();
     void power_on();
     void power_off();
+    void set_level(Zone_t zone, Level_t level);
 };
 #endif

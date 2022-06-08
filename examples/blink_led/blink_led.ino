@@ -19,27 +19,27 @@ long lastTime = 0;
 /*****************************************************************/
 void setup()
 {
-  pinMode(LED_PIN, OUTPUT);
-  Serial.begin(115200);
-  Serial.println("Restart!");
+    pinMode(LED_PIN, OUTPUT);
+    Serial.begin(115200);
+    Serial.println("Restart!");
 }
 /*****************************************************************/
 void loop()
 {
-  if (LedState)
-  {
-    digitalWrite(LED_PIN, LOW);
-  }
-  else
-  {
-    digitalWrite(LED_PIN, HIGH);
-  }
+    if(LedState)
+    {
+        digitalWrite(LED_PIN, LOW);
+    }
+    else
+    {
+        digitalWrite(LED_PIN, HIGH);
+    }
 
-  if ((millis() - lastTime) > DELAY_PERIOD)
-  {
-    LedState = !LedState;
-    lastTime = millis();
-  }
+    if((millis() - lastTime) > DELAY_PERIOD)
+    {
+        LedState = !LedState;
+        lastTime = millis();
+    }
 }
 /*****************************************************************/
 /*****************************************************************/

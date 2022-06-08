@@ -9,25 +9,39 @@
 
 #include "iot_com.h"
 
-uint32_t SendKey = 0;
-uint8_t KeyRetry = 0;
-
 uint8_t KeyListStart = 0;
 uint8_t KeyListEnd = 0;
 uint32_t KeyListBuffer[KEY_LIST_SIZE];
-uint8_t KeyTimeListBuffer[KEY_LIST_SIZE];
+
+extern uint32_t KeyFeedback;
+uint32_t SendKey;
+bool releaseKey = false;
 
 /******************************************************/
 /******************************************************/
 /******************************************************/
-bool Iot_Com::key_pop(uint32_t *key, uint8_t *time)
+uint8_t Iot_Com::key_count()
+{
+    return KeyListEnd - KeyListStart;
+}
+/******************************************************/
+bool Iot_Com::key_get(uint32_t *key)
+{
+    if(KeyListEnd - KeyListStart == 0)
+    {
+        *key = 0;
+        return false;
+    }
+    *key = KeyListBuffer[KeyListStart];
+    return true;
+}
+/******************************************************/
+bool Iot_Com::key_pop()
 {
     if(KeyListEnd - KeyListStart == 0)
     {
         return false;
     }
-    *key = KeyListBuffer[KeyListStart];
-    *time = KeyTimeListBuffer[KeyListStart];
     if(++KeyListStart >= KEY_LIST_SIZE)
     {
         KeyListStart = 0;
@@ -35,10 +49,9 @@ bool Iot_Com::key_pop(uint32_t *key, uint8_t *time)
     return true;
 }
 /******************************************************/
-bool Iot_Com::key_push(uint32_t key, uint8_t time)
+bool Iot_Com::key_push(uint32_t key)
 {
     KeyListBuffer[KeyListEnd] = key;
-    KeyTimeListBuffer[KeyListEnd] = time;
     if(++KeyListEnd >= KEY_LIST_SIZE)
     {
         KeyListEnd = 0;
@@ -48,22 +61,31 @@ bool Iot_Com::key_push(uint32_t key, uint8_t time)
 /******************************************************/
 void Iot_Com::key_procces()
 {
-    if(KeyRetry)
+    if(releaseKey == true)
     {
-        key_send(SendKey);
-        if(--KeyRetry == 0)
+        if(KeyFeedback != 0)
         {
-            KeyRetry = 0;
-            SendKey = 0;
+            key_send(SendKey);
         }
-        else if(KeyRetry == 3)
+        else
         {
-            SendKey = 0;
+            releaseKey = false;
         }
     }
     else
     {
-        key_pop(&SendKey, &KeyRetry);
+        key_get(&SendKey);
+
+        if(SendKey == KeyFeedback)
+        {
+            key_pop();
+            SendKey = 0;
+            releaseKey = true;
+        }
+        else
+        {
+            key_send(SendKey);
+        }
     }
 }
 /******************************************************/
