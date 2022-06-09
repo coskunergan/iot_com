@@ -9,17 +9,13 @@
 
 #include "iot_com.h"
 
-uint32_t DisplayTimePreviousMillis = 0;
-uint32_t KeyTimePreviousMillis = 0;
-uint32_t KeyFeedback = 0;
-uint8_t DisplayBuffer[6];
-uint8_t RxCount = 0;
-
 /******************************************************/
 /******************************************************/
 /******************************************************/
 void Iot_Com::procces()
 {
+    static uint32_t DisplayTimePreviousMillis = 0;
+    static uint32_t KeyTimePreviousMillis = 0;
     //----------------------
     while(0 < Wire.available())
     {
@@ -79,6 +75,7 @@ void Iot_Com::procces()
                 device_status = DEVICE_OFF;
             }
         }
+        character_handler();
     }
     //----------------------
     uint32_t currentMillis = millis();
@@ -110,55 +107,73 @@ Iot_CommandStatus_t Iot_Com::get_command_status()
     return command_status;
 }
 /******************************************************/
-void Iot_Com::power_on()
+Iot_Status_t Iot_Com::power_on()
 {
-    key_push(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
+    return key_push(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
 }
 /******************************************************/
-void Iot_Com::power_off()
+Iot_Status_t Iot_Com::power_off()
 {
-    key_push(KEY_BITS(KEY_ON_OFF));
+    return key_push(KEY_BITS(KEY_ON_OFF));
 }
 /******************************************************/
-void Iot_Com::set_level(Zone_t zone, Level_t level)
+Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
 {
-    key_push(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+    Iot_Status_t result = IOT_SUCCES;
+
+    if(zone >= NUMBER_OF_ZONE || level > LEVEL_DB)
+    {
+        result =  IOT_FAIL;
+        return result;
+    }
+    result = key_push(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
     switch(level)
     {
         case LEVEL_0:
-            key_push(KEY_BITS(KEY_SA0));
+            result = key_push(KEY_BITS(KEY_SA0));
             break;
         case LEVEL_1:
-            key_push(KEY_BITS(KEY_SA1));
+            result = key_push(KEY_BITS(KEY_SA1));
             break;
         case LEVEL_2:
-            key_push(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
+            result = key_push(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
             break;
         case LEVEL_3:
-            key_push(KEY_BITS(KEY_SA3));
+            result = key_push(KEY_BITS(KEY_SA3));
             break;
         case LEVEL_4:
-            key_push(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
+            result = key_push(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
             break;
         case LEVEL_5:
-            key_push(KEY_BITS(KEY_SA5));
+            result = key_push(KEY_BITS(KEY_SA5));
             break;
         case LEVEL_6:
-            key_push(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
+            result = key_push(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
             break;
         case LEVEL_7:
-            key_push(KEY_BITS(KEY_SA7));
+            result = key_push(KEY_BITS(KEY_SA7));
             break;
         case LEVEL_8:
-            key_push(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
+            result = key_push(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
             break;
         case LEVEL_9:
-            key_push(KEY_BITS(KEY_SA9));
+            result = key_push(KEY_BITS(KEY_SA9));
             break;
         case LEVEL_B:
-            key_push(KEY_BITS(KEY_BOOST));
+            result = key_push(KEY_BITS(KEY_BOOST));
             break;
     }
+    return result;
+}
+/******************************************************/
+Iot_Status_t Iot_Com::get_level(Zone_t zone, Level_t *level)
+{
+    if(zone >= NUMBER_OF_ZONE)
+    {
+        return IOT_FAIL;
+    }
+    *level = ZoneLevel[zone];
+    return IOT_SUCCES;
 }
 /******************************************************/
 /******************************************************/

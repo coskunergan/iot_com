@@ -18,10 +18,6 @@ long lastTime = 0;
 long debugTime = 0;
 bool state = false;
 
-extern uint32_t KeyFeedback;
-extern uint8_t DisplayBuffer[];
-extern uint32_t SendKey;
-
 Iot_Com Iot_Com(0x60, D1, D2);
 
 #define DELAY_PERIOD 5000
@@ -63,8 +59,13 @@ void loop()
     if((millis() - debugTime) > DEBUG_PERIOD)
     {
         debugTime = millis();
-        Serial.printf("API:V%d DEV:%d (%X)(%X)(%X)(%X)(%X)(%X)\r\n", Iot_Com.api_version, Iot_Com.device_type, DisplayBuffer[0], DisplayBuffer[1], DisplayBuffer[2], DisplayBuffer[3], DisplayBuffer[4], DisplayBuffer[5]);
-        Serial.printf("Count:%d FB: %X Send: %X \r\n", Iot_Com.get_command_status(), KeyFeedback, SendKey);
+        Serial.printf("API:V%d DEV:%d (%c)(%c)(%c)(%c)(%c%c)\r\n", Iot_Com.api_version, Iot_Com.device_type,
+                      Iot_Com.ZoneChar[0],
+                      Iot_Com.ZoneChar[1],
+                      Iot_Com.ZoneChar[2],
+                      Iot_Com.ZoneChar[3],
+                      Iot_Com.TimeZoneChar[0],
+                      Iot_Com.TimeZoneChar[1]);
     }
 }
 /*****************************************************************/
