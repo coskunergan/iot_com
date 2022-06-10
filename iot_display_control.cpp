@@ -98,7 +98,7 @@ void Iot_Com::character_handler()
 
     for(zone = 0; zone < NUMBER_OF_ZONE; zone++)
     {
-        ZoneChar[zone] = Asci_Contert_Of_Char(CharacterCheck(DisplayBuffer[zone]));
+        ZoneChar[zone] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[zone]));
         if(ZoneChar[zone] >= '0' && ZoneChar[zone] <= '9')
         {
             ZoneLevel[zone] = (Level_t)(ZoneChar[zone] - '0');
@@ -112,8 +112,8 @@ void Iot_Com::character_handler()
             ZoneLevel[zone] = LEVEL_0;
         }
     }
-    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(DisplayBuffer[NUMBER_OF_ZONE]));
-    TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(DisplayBuffer[NUMBER_OF_ZONE + 1]));
+    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE]));
+    TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE + 1]));
 }
 /******************************************************/
 void Iot_Com::display_procces()

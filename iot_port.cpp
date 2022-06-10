@@ -12,70 +12,80 @@
 /******************************************************/
 /******************************************************/
 /******************************************************/
+void Iot_Com::Crc16_Calc_Byte(uint8_t byte)
+{
+    uint8_t j;
+    crc16 ^= byte;
+    for(j = 0; j < 8; j++)
+    {
+        if(crc16 & 0x01)
+        {
+            crc16 = (crc16 >> 1) ^ 0xA001;
+        }
+        else
+        {
+            crc16 = crc16 >> 1;
+        }
+    }
+}
+/******************************************************/
 void Iot_Com::procces()
 {
     static uint32_t DisplayTimePreviousMillis = 0;
     static uint32_t KeyTimePreviousMillis = 0;
+    bool crc_check = false;
     //----------------------
     while(0 < Wire.available())
     {
-        uint8_t temp = Wire.read();
-        switch(RxCount)
+        //ReceiveBuffer[RxCount] = Wire.read();
+        uint8_t *temp = (uint8_t *)&TempBuffer;
+        temp += RxCount;
+        *temp = Wire.read();
+
+        if(RxCount < GET_BYTE_COUNT - 2)
         {
-            case 0:
-                api_version = temp;
-                if(api_version != API_VERSION)
-                {
-                    device_status = UNSUPPORTED_API;
-                }
-                break;
-            case 1:
-                device_type = (DeviceType_t)temp;
-                if(device_type != DEVICE_TYPE)
-                {
-                    device_status = UNSUPPORTED_DEVICE;
-                }
-                break;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-                DisplayBuffer[RxCount - 2] = temp;
-                break;
-            case 8:
-                KeyFeedback = temp;
-                break;
-            case 9:
-                KeyFeedback |= ((uint32_t)temp << 8);
-                break;
-            case 10:
-                KeyFeedback |= ((uint32_t)temp << 16);
-                break;
-            case 11:
-                KeyFeedback |= ((uint32_t)temp << 24);
-                break;
-            default:
-                break;
+            Crc16_Calc_Byte(*temp);
         }
+        else if(RxCount == GET_BYTE_COUNT - 1)
+        {
+            if(crc16 == TempBuffer.crc16)
+            {
+                crc_check = true;
+                ReceivedBuffer = TempBuffer;
+            }
+            crc16 = 0;
+        }
+ 
+        // if(crc_check == true)
+        // {
+        //     if(ReceivedBuffer.api_version != API_VERSION)
+        //     {
+        //         device_status = UNSUPPORTED_API;
+        //     }
+        //     api_version = (DeviceType_t)ReceivedBuffer.api_version;
+        //     if(ReceivedBuffer.device_type != DEVICE_TYPE)
+        //     {
+        //         device_status = UNSUPPORTED_DEVICE;
+        //     }
+        //     device_type = (DeviceType_t)ReceivedBuffer.device_type;
+        //     if((device_status != UNSUPPORTED_API) && (device_status != UNSUPPORTED_DEVICE))
+        //     {
+        //         if(ReceivedBuffer.display[0] == 0x9) // PAUSE KEY
+        //         {
+        //             device_status = DEVICE_PAUSE;
+        //         }
+        //         else if(ReceivedBuffer.display[0] | ReceivedBuffer.display[1] | ReceivedBuffer.display[2] | ReceivedBuffer.display[3])
+        //         {
+        //             device_status = DEVICE_ON;
+        //         }
+        //         else
+        //         {
+        //             device_status = DEVICE_OFF;
+        //         }
+        //     }
+        //     character_handler();
+        // }
         RxCount++;
-        if((device_status != UNSUPPORTED_API) && (device_status != UNSUPPORTED_DEVICE))
-        {
-            if(DisplayBuffer[0] == 0x9) // PAUSE KEY
-            {
-                device_status = DEVICE_PAUSE;
-            }
-            else if(DisplayBuffer[0] | DisplayBuffer[1] | DisplayBuffer[2] | DisplayBuffer[3])
-            {
-                device_status = DEVICE_ON;
-            }
-            else
-            {
-                device_status = DEVICE_OFF;
-            }
-        }
-        character_handler();
     }
     //----------------------
     uint32_t currentMillis = millis();

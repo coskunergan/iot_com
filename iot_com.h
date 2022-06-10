@@ -17,8 +17,10 @@
 #define KEY_TIME_TICK_MS      150
 #define DISPLAY_TIME_TICK_MS   50
 #define KEY_LIST_SIZE          32
-#define GET_BYTE_COUNT         12
+#define GET_BYTE_COUNT         14
+#define SEND_BYTE_COUNT        6
 #define NUMBER_OF_ZONE         4
+#define I2C_CRC16_INIT     0xFFFF
 
 #define   KEY_ZONE1    3
 #define   KEY_ZONE2    4
@@ -185,25 +187,37 @@ typedef enum
     CHAR_NULL
 } Character_t;
 
+typedef struct
+{
+    uint8_t api_version;
+    uint8_t device_type;
+    uint8_t display[NUMBER_OF_ZONE + 2];
+    uint32_t keyfeedback;
+    uint16_t crc16;
+} ReceiveBuffer_t;
+
 class Iot_Com
 {
 private:
     uint8_t i2c_addr;
     uint8_t RxCount;
     uint32_t SendKey;
-    uint32_t KeyFeedback;
+    
     bool releaseKey = false;
     uint8_t KeyListStart = 0;
     uint8_t KeyListEnd = 0;
     uint32_t KeyListBuffer[KEY_LIST_SIZE];
+    uint16_t crc16;    
+    ReceiveBuffer_t TempBuffer;
+    ReceiveBuffer_t ReceivedBuffer;
     Iot_DeviceStatus_t device_status;
     Iot_CommandStatus_t command_status;
-    Iot_ZoneErrors_t zone_errors;
-    uint8_t DisplayBuffer[NUMBER_OF_ZONE + 2];
+    Iot_ZoneErrors_t zone_errors;    
     Level_t ZoneLevel[NUMBER_OF_ZONE];
     Iot_Status_t key_procces();
     uint8_t key_count();
     bool key_get(uint32_t *key);
+    void Crc16_Calc_Byte(uint8_t byte);
     Iot_Status_t key_pop();
     Iot_Status_t key_push(uint32_t key);
     Iot_Status_t key_send(uint32_t keys);

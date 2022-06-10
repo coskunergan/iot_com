@@ -24,19 +24,5 @@ void Iot_Com::init()
 
 }
 /******************************************************/
-Iot_Status_t Iot_Com::key_send(uint32_t keys)
-{
-    uint8_t buffer[4];
-    Wire.beginTransmission(0x60);
-    buffer[0] = keys;
-    buffer[1] = keys >> 8;
-    buffer[2] = keys >> 16;
-    buffer[3] = keys >> 24;
-    Wire.write(buffer, 4);
-    Wire.endTransmission();
-
-    return IOT_SUCCES;
-}
-/******************************************************/
 /******************************************************/
 /******************************************************/
