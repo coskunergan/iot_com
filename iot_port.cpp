@@ -37,7 +37,6 @@ void Iot_Com::procces()
     //----------------------
     while(0 < Wire.available())
     {
-        //ReceiveBuffer[RxCount] = Wire.read();
         uint8_t *temp = (uint8_t *)&TempBuffer;
         temp += RxCount;
         *temp = Wire.read();
@@ -48,43 +47,44 @@ void Iot_Com::procces()
         }
         else if(RxCount == GET_BYTE_COUNT - 1)
         {
-            if(crc16 == TempBuffer.crc16)
+            //if(crc16 == TempBuffer.crc16) //will be invert.
+            if(((crc16 & 0x00FF)  == (TempBuffer.crc16 >> 8)) && ((crc16 >> 8) == (TempBuffer.crc16 & 0x00FF))) 
             {
                 crc_check = true;
                 ReceivedBuffer = TempBuffer;
             }
-            crc16 = 0;
         }
- 
-        // if(crc_check == true)
-        // {
-        //     if(ReceivedBuffer.api_version != API_VERSION)
-        //     {
-        //         device_status = UNSUPPORTED_API;
-        //     }
-        //     api_version = (DeviceType_t)ReceivedBuffer.api_version;
-        //     if(ReceivedBuffer.device_type != DEVICE_TYPE)
-        //     {
-        //         device_status = UNSUPPORTED_DEVICE;
-        //     }
-        //     device_type = (DeviceType_t)ReceivedBuffer.device_type;
-        //     if((device_status != UNSUPPORTED_API) && (device_status != UNSUPPORTED_DEVICE))
-        //     {
-        //         if(ReceivedBuffer.display[0] == 0x9) // PAUSE KEY
-        //         {
-        //             device_status = DEVICE_PAUSE;
-        //         }
-        //         else if(ReceivedBuffer.display[0] | ReceivedBuffer.display[1] | ReceivedBuffer.display[2] | ReceivedBuffer.display[3])
-        //         {
-        //             device_status = DEVICE_ON;
-        //         }
-        //         else
-        //         {
-        //             device_status = DEVICE_OFF;
-        //         }
-        //     }
-        //     character_handler();
-        // }
+
+        if(crc_check == true)
+        {
+            crc_check = false;
+            if(ReceivedBuffer.api_version != API_VERSION)
+            {
+                device_status = UNSUPPORTED_API;
+            }
+            api_version = (DeviceType_t)ReceivedBuffer.api_version;
+            if(ReceivedBuffer.device_type != DEVICE_TYPE)
+            {
+                device_status = UNSUPPORTED_DEVICE;
+            }
+            device_type = (DeviceType_t)ReceivedBuffer.device_type;
+            if((device_status != UNSUPPORTED_API) && (device_status != UNSUPPORTED_DEVICE))
+            {
+                if(ReceivedBuffer.display[0] == 0x9) // PAUSE KEY
+                {
+                    device_status = DEVICE_PAUSE;
+                }
+                else if(ReceivedBuffer.display[0] | ReceivedBuffer.display[1] | ReceivedBuffer.display[2] | ReceivedBuffer.display[3])
+                {
+                    device_status = DEVICE_ON;
+                }
+                else
+                {
+                    device_status = DEVICE_OFF;
+                }
+            }
+            character_handler();
+        }
         RxCount++;
     }
     //----------------------
@@ -110,11 +110,6 @@ Iot_ZoneErrors_t get_zone_error(Zone_t zone)
 Iot_DeviceStatus_t Iot_Com::get_device_status()
 {
     return device_status;
-}
-/******************************************************/
-Iot_CommandStatus_t Iot_Com::get_command_status()
-{
-    return command_status;
 }
 /******************************************************/
 Iot_Status_t Iot_Com::power_on()

@@ -12,15 +12,15 @@
 
 #include <Wire.h>
 
-#define API_VERSION           100 // V1.0.0
-#define DEVICE_TYPE           I6S02B
-#define KEY_TIME_TICK_MS      150
+#define API_VERSION            100 // V1.0.0
+#define DEVICE_TYPE            I6S02B
+#define KEY_TIME_TICK_MS       150
 #define DISPLAY_TIME_TICK_MS   50
 #define KEY_LIST_SIZE          32
 #define GET_BYTE_COUNT         14
 #define SEND_BYTE_COUNT        6
 #define NUMBER_OF_ZONE         4
-#define I2C_CRC16_INIT     0xFFFF
+#define I2C_CRC16_INIT         0xFFFF
 
 #define   KEY_ZONE1    3
 #define   KEY_ZONE2    4
@@ -89,11 +89,11 @@ typedef enum
 typedef enum
 {
     ZONE_NO_ERROR = 0x00,
-    ZONE_ERROR_F1 = 0x01, //  Data Communication fail
+    ZONE_ERROR_F1 = 0x01, //  Power driver Data Communication fail
     ZONE_ERROR_E3 = 0x02, //  High voltahe
     ZONE_ERROR_E4 = 0x04, //  Low voltage
     ZONE_ERROR_E2 = 0x08, //  IGBT overheat
-    ZONE_ERROR_E1 = 0x10, //  Extreme overheat
+    ZONE_ERROR_E1 = 0x10, //  Plate Extreme overheat
     ZONE_ERROR_EE = 0x20  //  NTC Communication fail
 } Iot_ZoneErrors_t;
 
@@ -107,13 +107,6 @@ typedef enum
     UNSUPPORTED_DEVICE,
     UNSUPPORTED_API
 } Iot_DeviceStatus_t;
-
-typedef enum
-{
-    COMMAND_READY = 0,
-    COMMAND_BUSY,
-    COMMAND_FAIL
-} Iot_CommandStatus_t;
 
 typedef enum
 {
@@ -202,17 +195,15 @@ private:
     uint8_t i2c_addr;
     uint8_t RxCount;
     uint32_t SendKey;
-    
     bool releaseKey = false;
     uint8_t KeyListStart = 0;
     uint8_t KeyListEnd = 0;
     uint32_t KeyListBuffer[KEY_LIST_SIZE];
-    uint16_t crc16;    
+    uint16_t crc16;
     ReceiveBuffer_t TempBuffer;
     ReceiveBuffer_t ReceivedBuffer;
     Iot_DeviceStatus_t device_status;
-    Iot_CommandStatus_t command_status;
-    Iot_ZoneErrors_t zone_errors;    
+    Iot_ZoneErrors_t zone_errors;
     Level_t ZoneLevel[NUMBER_OF_ZONE];
     Iot_Status_t key_procces();
     uint8_t key_count();
@@ -235,7 +226,6 @@ public:
     void procces();
     Iot_ZoneErrors_t get_zone_error(Zone_t zone);
     Iot_DeviceStatus_t get_device_status();
-    Iot_CommandStatus_t get_command_status();
     Iot_Status_t power_on();
     Iot_Status_t power_off();
     Iot_Status_t set_level(Zone_t zone, Level_t level);

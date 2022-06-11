@@ -43,6 +43,10 @@ Iot_Status_t Iot_Com::key_pop()
 /******************************************************/
 Iot_Status_t Iot_Com::key_push(uint32_t key)
 {
+    if((device_status == UNSUPPORTED_API) || (device_status == UNSUPPORTED_DEVICE) || (device_status == DEVICE_LOST))
+    {
+        return IOT_FAIL;
+    }
     if(key_count() >= KEY_LIST_SIZE)
     {
         return IOT_FAIL;
