@@ -22,6 +22,8 @@
 #define NUMBER_OF_ZONE         4
 #define I2C_CRC16_INIT         0xFFFF
 
+
+#define   KEY_RELEASE  0
 #define   KEY_ZONE1    3
 #define   KEY_ZONE2    4
 #define   KEY_ZONE3    5
@@ -194,17 +196,19 @@ class Iot_Com
 private:
     uint8_t i2c_addr;
     uint8_t RxCount;
-    uint32_t SendKey;
-    bool releaseKey = false;
+    bool key_release = false;
     uint8_t KeyListStart = 0;
     uint8_t KeyListEnd = 0;
     uint32_t KeyListBuffer[KEY_LIST_SIZE];
     uint16_t crc16;
+    uint8_t api_version;
+    DeviceType_t device_type;
+    char ZoneChar[NUMBER_OF_ZONE];
+    char TimeZoneChar[2];
+    Level_t ZoneLevel[NUMBER_OF_ZONE];
     ReceiveBuffer_t TempBuffer;
     ReceiveBuffer_t ReceivedBuffer;
     Iot_DeviceStatus_t device_status;
-    Iot_ZoneErrors_t zone_errors;
-    Level_t ZoneLevel[NUMBER_OF_ZONE];
     Iot_Status_t key_procces();
     uint8_t key_count();
     bool key_get(uint32_t *key);
@@ -217,18 +221,19 @@ private:
     void display_procces();
     void character_handler();
 public:
-    uint8_t api_version;
-    DeviceType_t device_type;
-    char ZoneChar[NUMBER_OF_ZONE];
-    char TimeZoneChar[2];
     Iot_Com(uint8_t addr, uint16_t pin_sda, uint16_t pin_clk);
     void init();
     void procces();
-    Iot_ZoneErrors_t get_zone_error(Zone_t zone);
+    Iot_ZoneErrors_t get_zone_error(Zone_t zone);//not yet!
     Iot_DeviceStatus_t get_device_status();
     Iot_Status_t power_on();
     Iot_Status_t power_off();
     Iot_Status_t set_level(Zone_t zone, Level_t level);
     Iot_Status_t get_level(Zone_t zone, Level_t *level);
+    uint8_t get_api_version();
+    DeviceType_t get_device_type();
+    char get_zone_display(Zone_t zone);
+    char get_timer_display_high();
+    char get_timer_display_low();
 };
 #endif

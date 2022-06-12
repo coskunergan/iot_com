@@ -81,30 +81,31 @@ Iot_Status_t Iot_Com::key_send(uint32_t keys)
 /******************************************************/
 Iot_Status_t Iot_Com::key_procces()
 {
-    if(releaseKey == true)
+    uint32_t key;   
+
+    if(key_release == true)
     {
-        if(ReceivedBuffer.keyfeedback != 0)
+        if(ReceivedBuffer.keyfeedback != KEY_RELEASE)
         {
-            return key_send(SendKey);
+            return key_send(KEY_RELEASE);
         }
         else
         {
-            releaseKey = false;
+            key_release = false;
         }
     }
     else
     {
-        key_get(&SendKey);
+        key_get(&key);
 
-        if(SendKey == ReceivedBuffer.keyfeedback)
+        if(key == ReceivedBuffer.keyfeedback)
         {
-            SendKey = 0;
-            releaseKey = true;
-            return key_pop();
+            key_release = true;
+            key_pop();
         }
         else
         {
-            return key_send(SendKey);
+            return key_send(key);
         }
     }
     return IOT_SUCCES;
