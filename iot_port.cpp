@@ -47,8 +47,7 @@ void Iot_Com::procces()
         }
         else if(RxCount == GET_BYTE_COUNT - 1)
         {
-            //if(crc16 == TempBuffer.crc16) //will be invert.
-            if(((crc16 & 0x00FF)  == (TempBuffer.crc16 >> 8)) && ((crc16 >> 8) == (TempBuffer.crc16 & 0x00FF)))
+            if(crc16 == TempBuffer.crc16)
             {
                 crc_check = true;
                 ReceivedBuffer = TempBuffer;
@@ -102,9 +101,9 @@ void Iot_Com::procces()
     //----------------------
 }
 /******************************************************/
-Iot_ZoneErrors_t get_zone_error(Zone_t zone)
+uint8_t Iot_Com::get_zone_error(Zone_t zone)
 {
-    return ZONE_NO_ERROR;
+    return ZoneErrors[zone].Value;
 }
 /******************************************************/
 Iot_DeviceStatus_t Iot_Com::get_device_status()
@@ -129,12 +128,12 @@ char Iot_Com::get_zone_display(Zone_t zone)
 /******************************************************/
 char Iot_Com::get_timer_display_high()
 {
-    return TimeZoneChar[0]; 
+    return TimeZoneChar[0];
 }
 /******************************************************/
 char Iot_Com::get_timer_display_low()
 {
-    return TimeZoneChar[1]; 
+    return TimeZoneChar[1];
 }
 /******************************************************/
 Iot_Status_t Iot_Com::power_on()

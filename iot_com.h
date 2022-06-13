@@ -88,16 +88,31 @@ typedef enum
     LEVEL_DB
 } Level_t;
 
-typedef enum
+// typedef enum
+// {
+//     ZONE_NO_ERROR = 0x00,
+//     ZONE_ERROR_F1 = 0x01,
+//     ZONE_ERROR_E3 = 0x02,
+//     ZONE_ERROR_E4 = 0x04,
+//     ZONE_ERROR_E2 = 0x08,
+//     ZONE_ERROR_E1 = 0x10,
+//     ZONE_TOUCH_ERROR = 0x80
+// } Iot_ZoneErrors_t;
+
+typedef union
 {
-    ZONE_NO_ERROR = 0x00,
-    ZONE_ERROR_F1 = 0x01, //  Power driver Data Communication fail
-    ZONE_ERROR_E3 = 0x02, //  High voltahe
-    ZONE_ERROR_E4 = 0x04, //  Low voltage
-    ZONE_ERROR_E2 = 0x08, //  IGBT overheat
-    ZONE_ERROR_E1 = 0x10, //  Plate Extreme overheat
-    ZONE_ERROR_EE = 0x20  //  NTC Communication fail
+    uint8_t Value;
+    struct
+    {
+        uint8_t F1_Error : 1;//  Power driver Data Communication fail
+        uint8_t E1_Error : 1;//  Plate Extreme overheat
+        uint8_t E2_Error : 1;//  IGBT overheat
+        uint8_t E3_Error : 1;//  High voltahe
+        uint8_t E4_Error : 1;//  Low voltage
+        uint8_t Touch_Error : 1;// Water contact the touch plate
+    } bits;
 } Iot_ZoneErrors_t;
+
 
 typedef enum
 {
@@ -197,12 +212,14 @@ private:
     uint8_t i2c_addr;
     uint8_t RxCount;
     bool key_release = false;
+    bool error_flag = false;
     uint8_t KeyListStart = 0;
     uint8_t KeyListEnd = 0;
     uint32_t KeyListBuffer[KEY_LIST_SIZE];
     uint16_t crc16;
     uint8_t api_version;
     DeviceType_t device_type;
+    Iot_ZoneErrors_t ZoneErrors[NUMBER_OF_ZONE];
     char ZoneChar[NUMBER_OF_ZONE];
     char TimeZoneChar[2];
     Level_t ZoneLevel[NUMBER_OF_ZONE];
@@ -224,7 +241,7 @@ public:
     Iot_Com(uint8_t addr, uint16_t pin_sda, uint16_t pin_clk);
     void init();
     void procces();
-    Iot_ZoneErrors_t get_zone_error(Zone_t zone);//not yet!
+    uint8_t get_zone_error(Zone_t zone);
     Iot_DeviceStatus_t get_device_status();
     Iot_Status_t power_on();
     Iot_Status_t power_off();

@@ -81,7 +81,7 @@ Iot_Status_t Iot_Com::key_send(uint32_t keys)
 /******************************************************/
 Iot_Status_t Iot_Com::key_procces()
 {
-    uint32_t key;   
+    uint32_t key;
 
     if(key_release == true)
     {

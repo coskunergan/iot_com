@@ -111,9 +111,73 @@ void Iot_Com::character_handler()
         {
             ZoneLevel[zone] = LEVEL_0;
         }
+        //------------------------------
+        if(ZoneErrors[zone].bits.F1_Error == 1)
+        {
+            if(ZoneChar[zone] != 'F' && ZoneChar[zone] != '1')
+            {
+                ZoneErrors[zone].bits.F1_Error = 0;
+            }
+        }
+        else
+        {
+            if(ZoneChar[zone] == 'F')
+            {
+                ZoneErrors[zone].bits.F1_Error = 1;
+            }
+        }
+        //-----------------------------
+        if(error_flag == true)
+        {
+            switch(ZoneChar[zone])
+            {
+                case '1':
+                    ZoneErrors[zone].bits.E1_Error = 1;
+                    break;
+                case '2':
+                    ZoneErrors[zone].bits.E2_Error = 1;
+                    break;
+                case '3':
+                    ZoneErrors[zone].bits.E3_Error = 1;
+                    break;
+                case '4':
+                    ZoneErrors[zone].bits.E4_Error = 1;
+                    break;
+                case 'E':
+                    break;
+                default:
+                    error_flag = false;
+                    break;
+            }
+        }
+        else
+        {
+            if(ZoneChar[zone] == 'E')
+            {
+                error_flag = true;
+            }
+            else
+            {
+                ZoneErrors[zone].bits.E1_Error = 0;
+                ZoneErrors[zone].bits.E2_Error = 0;
+                ZoneErrors[zone].bits.E3_Error = 0;
+                ZoneErrors[zone].bits.E4_Error = 0;
+            }
+        }
+        if(TimeZoneChar[0] == 'E' && TimeZoneChar[1] == 'R')
+        {
+            ZoneErrors[zone].bits.Touch_Error = 1;
+        }
+        else if(ZoneErrors[zone].bits.Touch_Error == 1)
+        {
+            if(TimeZoneChar[0] != '0' && TimeZoneChar[1] != '3')
+            {
+                ZoneErrors[zone].bits.Touch_Error = 0;
+            }
+        }
     }
-    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE]));
     TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE + 1]));
+    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE]));
 }
 /******************************************************/
 void Iot_Com::display_procces()
