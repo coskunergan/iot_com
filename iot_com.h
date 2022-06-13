@@ -88,17 +88,6 @@ typedef enum
     LEVEL_DB
 } Level_t;
 
-// typedef enum
-// {
-//     ZONE_NO_ERROR = 0x00,
-//     ZONE_ERROR_F1 = 0x01,
-//     ZONE_ERROR_E3 = 0x02,
-//     ZONE_ERROR_E4 = 0x04,
-//     ZONE_ERROR_E2 = 0x08,
-//     ZONE_ERROR_E1 = 0x10,
-//     ZONE_TOUCH_ERROR = 0x80
-// } Iot_ZoneErrors_t;
-
 typedef union
 {
     uint8_t Value;
@@ -107,8 +96,8 @@ typedef union
         uint8_t F1_Error : 1;//  Power driver Data Communication fail
         uint8_t E1_Error : 1;//  Plate Extreme overheat
         uint8_t E2_Error : 1;//  IGBT overheat
-        uint8_t E3_Error : 1;//  High voltahe
-        uint8_t E4_Error : 1;//  Low voltage
+        uint8_t E3_Error : 1;//  High input voltage
+        uint8_t E4_Error : 1;//  Low input voltage
         uint8_t Touch_Error : 1;// Water contact the touch plate
     } bits;
 } Iot_ZoneErrors_t;
