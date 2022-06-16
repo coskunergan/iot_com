@@ -96,7 +96,7 @@ void Iot_Com::character_handler()
 {
     uint8_t zone;
 
-    for(zone = 0; zone < NUMBER_OF_ZONE; zone++)
+    for(zone = 0; zone < IOT_NUMBER_OF_ZONE; zone++)
     {
         ZoneChar[zone] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[zone]));
         if(ZoneChar[zone] >= '0' && ZoneChar[zone] <= '9')
@@ -176,15 +176,15 @@ void Iot_Com::character_handler()
             }
         }
     }
-    TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE + 1]));
-    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[NUMBER_OF_ZONE]));
+    TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[IOT_NUMBER_OF_ZONE + 1]));
+    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[IOT_NUMBER_OF_ZONE]));
 }
 /******************************************************/
 void Iot_Com::display_procces()
 {
     RxCount = 0;
-    crc16 = I2C_CRC16_INIT;
-    Wire.requestFrom(0x60, GET_BYTE_COUNT);
+    crc16 = IOT_I2C_CRC16_INIT;
+    Wire.requestFrom(0x60, IOT_GET_BYTE_COUNT);
 }
 /******************************************************/
 /******************************************************/

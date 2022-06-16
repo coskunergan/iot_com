@@ -41,11 +41,11 @@ void Iot_Com::procces()
         temp += RxCount;
         *temp = Wire.read();
 
-        if(RxCount < GET_BYTE_COUNT - 2)
+        if(RxCount < IOT_GET_BYTE_COUNT - 2)
         {
             Crc16_Calc_Byte(*temp);
         }
-        else if(RxCount == GET_BYTE_COUNT - 1)
+        else if(RxCount == IOT_GET_BYTE_COUNT - 1)
         {
             if(crc16 == TempBuffer.crc16)
             {
@@ -57,12 +57,12 @@ void Iot_Com::procces()
         if(crc_check == true)
         {
             crc_check = false;
-            if(ReceivedBuffer.api_version != API_VERSION)
+            if(ReceivedBuffer.api_version != IOT_API_VERSION)
             {
                 device_status = UNSUPPORTED_API;
             }
             api_version = (DeviceType_t)ReceivedBuffer.api_version;
-            if(ReceivedBuffer.device_type != DEVICE_TYPE)
+            if(ReceivedBuffer.device_type != IOT_DEVICE_TYPE)
             {
                 device_status = UNSUPPORTED_DEVICE;
             }
@@ -88,12 +88,12 @@ void Iot_Com::procces()
     }
     //----------------------
     uint32_t currentMillis = millis();
-    if(currentMillis - KeyTimePreviousMillis >= KEY_TIME_TICK_MS)
+    if(currentMillis - KeyTimePreviousMillis >= IOT_KEY_TIME_TICK_MS)
     {
         KeyTimePreviousMillis = currentMillis;
         key_procces();
     }
-    if(currentMillis - DisplayTimePreviousMillis >= DISPLAY_TIME_TICK_MS)
+    if(currentMillis - DisplayTimePreviousMillis >= IOT_DISPLAY_TIME_TICK_MS)
     {
         DisplayTimePreviousMillis = currentMillis;
         display_procces();
@@ -150,7 +150,7 @@ Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
 {
     Iot_Status_t result = IOT_SUCCES;
 
-    if(zone >= NUMBER_OF_ZONE || level > LEVEL_DB)
+    if(zone >= IOT_NUMBER_OF_ZONE || level > LEVEL_DB)
     {
         result =  IOT_FAIL;
         return result;
@@ -197,7 +197,7 @@ Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
 /******************************************************/
 Iot_Status_t Iot_Com::get_level(Zone_t zone, Level_t *level)
 {
-    if(zone >= NUMBER_OF_ZONE)
+    if(zone >= IOT_NUMBER_OF_ZONE)
     {
         return IOT_FAIL;
     }

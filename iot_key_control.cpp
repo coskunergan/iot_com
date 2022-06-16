@@ -34,7 +34,7 @@ Iot_Status_t Iot_Com::key_pop()
     {
         return IOT_FAIL;
     }
-    if(++KeyListStart >= KEY_LIST_SIZE)
+    if(++KeyListStart >= IOT_KEY_LIST_SIZE)
     {
         KeyListStart = 0;
     }
@@ -47,12 +47,12 @@ Iot_Status_t Iot_Com::key_push(uint32_t key)
     {
         return IOT_FAIL;
     }
-    if(key_count() >= KEY_LIST_SIZE)
+    if(key_count() >= IOT_KEY_LIST_SIZE)
     {
         return IOT_FAIL;
     }
     KeyListBuffer[KeyListEnd] = key;
-    if(++KeyListEnd >= KEY_LIST_SIZE)
+    if(++KeyListEnd >= IOT_KEY_LIST_SIZE)
     {
         KeyListEnd = 0;
     }
@@ -61,20 +61,20 @@ Iot_Status_t Iot_Com::key_push(uint32_t key)
 /******************************************************/
 Iot_Status_t Iot_Com::key_send(uint32_t keys)
 {
-    uint8_t buffer[SEND_BYTE_COUNT], i;
+    uint8_t buffer[IOT_SEND_BYTE_COUNT], i;
     Wire.beginTransmission(0x60);
     buffer[0] = keys;
     buffer[1] = keys >> 8;
     buffer[2] = keys >> 16;
     buffer[3] = keys >> 24;
-    crc16 = I2C_CRC16_INIT;
-    for(i = 0; i < SEND_BYTE_COUNT - 2; i++)
+    crc16 = IOT_I2C_CRC16_INIT;
+    for(i = 0; i < IOT_SEND_BYTE_COUNT - 2; i++)
     {
         Crc16_Calc_Byte(buffer[i]);
     }
     buffer[4] = crc16 >> 8;
     buffer[5] = crc16 & 0xFF;
-    Wire.write(buffer, SEND_BYTE_COUNT);
+    Wire.write(buffer, IOT_SEND_BYTE_COUNT);
     Wire.endTransmission();
     return IOT_SUCCES;
 }

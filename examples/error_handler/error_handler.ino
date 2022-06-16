@@ -39,7 +39,7 @@ void loop()
     {
         lastTime = millis();
 
-        for(uint8_t zone = 0; zone < NUMBER_OF_ZONE; zone++)
+        for(uint8_t zone = 0; zone < IOT_NUMBER_OF_ZONE; zone++)
         {
             Serial.printf("Zone_%d:", zone);
             switch(Iot_Com.get_zone_error((Zone_t)zone))

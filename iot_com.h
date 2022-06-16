@@ -12,15 +12,15 @@
 
 #include <Wire.h>
 
-#define API_VERSION            100 // V1.0.0
-#define DEVICE_TYPE            I6S02B
-#define KEY_TIME_TICK_MS       150
-#define DISPLAY_TIME_TICK_MS   50
-#define KEY_LIST_SIZE          32
-#define GET_BYTE_COUNT         14
-#define SEND_BYTE_COUNT        6
-#define NUMBER_OF_ZONE         4
-#define I2C_CRC16_INIT         0xFFFF
+#define IOT_API_VERSION        100 // V1.0.0
+#define IOT_DEVICE_TYPE        I6S02B
+#define IOT_KEY_TIME_TICK_MS       150
+#define IOT_DISPLAY_TIME_TICK_MS   50
+#define IOT_KEY_LIST_SIZE          32
+#define IOT_GET_BYTE_COUNT         14
+#define IOT_SEND_BYTE_COUNT        6
+#define IOT_NUMBER_OF_ZONE         4
+#define IOT_I2C_CRC16_INIT         0xFFFF
 
 
 #define   KEY_RELEASE  0
@@ -190,7 +190,7 @@ typedef struct
 {
     uint8_t api_version;
     uint8_t device_type;
-    uint8_t display[NUMBER_OF_ZONE + 2];
+    uint8_t display[IOT_NUMBER_OF_ZONE + 2];
     uint32_t keyfeedback;
     uint16_t crc16;
 } ReceiveBuffer_t;
@@ -204,14 +204,14 @@ private:
     bool error_flag = false;
     uint8_t KeyListStart = 0;
     uint8_t KeyListEnd = 0;
-    uint32_t KeyListBuffer[KEY_LIST_SIZE];
+    uint32_t KeyListBuffer[IOT_KEY_LIST_SIZE];
     uint16_t crc16;
     uint8_t api_version;
     DeviceType_t device_type;
-    Iot_ZoneErrors_t ZoneErrors[NUMBER_OF_ZONE];
-    char ZoneChar[NUMBER_OF_ZONE];
+    Iot_ZoneErrors_t ZoneErrors[IOT_NUMBER_OF_ZONE];
+    char ZoneChar[IOT_NUMBER_OF_ZONE];
     char TimeZoneChar[2];
-    Level_t ZoneLevel[NUMBER_OF_ZONE];
+    Level_t ZoneLevel[IOT_NUMBER_OF_ZONE];
     ReceiveBuffer_t TempBuffer;
     ReceiveBuffer_t ReceivedBuffer;
     Iot_DeviceStatus_t device_status;
