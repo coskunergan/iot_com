@@ -229,15 +229,15 @@ private:
 public:
     Iot_Com(uint8_t addr, uint16_t pin_sda, uint16_t pin_clk);
     void init();
-    void procces();
-    uint8_t get_zone_error(Zone_t zone);
-    Iot_DeviceStatus_t get_device_status();
+    void procces();        
     Iot_Status_t power_on();
     Iot_Status_t power_off();
     Iot_Status_t set_level(Zone_t zone, Level_t level);
     Iot_Status_t get_level(Zone_t zone, Level_t *level);
     uint8_t get_api_version();
     DeviceType_t get_device_type();
+    Iot_DeviceStatus_t get_device_status();
+    uint8_t get_zone_error(Zone_t zone);
     char get_zone_display(Zone_t zone);
     char get_timer_display_high();
     char get_timer_display_low();
