@@ -28,6 +28,32 @@ bool Iot_Com::key_get(uint32_t *key)
     return true;
 }
 /******************************************************/
+uint32_t Iot_Com::prev_key_get()
+{
+    if(KeyListEnd - KeyListStart == 0)
+    {
+        return KEY_RELEASE;
+    }
+    if(KeyListEnd)
+    {
+        return KeyListBuffer[KeyListEnd - 1];
+    }
+    return KeyListBuffer[IOT_KEY_LIST_SIZE - 1];
+}
+/******************************************************/
+void Iot_Com::key_remove()
+{
+    if(KeyListEnd)
+    {
+        KeyListEnd--;
+    }
+    else
+    {
+        KeyListEnd = IOT_KEY_LIST_SIZE - 1;
+    }
+    KeyListBuffer[KeyListEnd] = KEY_RELEASE;
+}
+/******************************************************/
 Iot_Status_t Iot_Com::key_pop()
 {
     if(KeyListEnd - KeyListStart == 0)
@@ -100,7 +126,10 @@ Iot_Status_t Iot_Com::key_procces()
 
         if(key == ReceivedBuffer.keyfeedback)
         {
-            key_release = true;
+            //if((key & (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))) != key)
+            {
+                key_release = true;
+            }
             key_pop();
         }
         else

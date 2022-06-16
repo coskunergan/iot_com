@@ -206,6 +206,7 @@ private:
     uint8_t KeyListEnd = 0;
     uint32_t KeyListBuffer[IOT_KEY_LIST_SIZE];
     uint16_t crc16;
+    Zone_t SelectZone;
     uint8_t api_version;
     DeviceType_t device_type;
     Iot_ZoneErrors_t ZoneErrors[IOT_NUMBER_OF_ZONE];
@@ -216,9 +217,11 @@ private:
     ReceiveBuffer_t ReceivedBuffer;
     Iot_DeviceStatus_t device_status;
     Iot_Status_t key_procces();
-    uint8_t key_count();
-    bool key_get(uint32_t *key);
+    uint8_t key_count();    
     void Crc16_Calc_Byte(uint8_t byte);
+    bool key_get(uint32_t *key);
+    uint32_t prev_key_get();
+    void key_remove();
     Iot_Status_t key_pop();
     Iot_Status_t key_push(uint32_t key);
     Iot_Status_t key_send(uint32_t keys);

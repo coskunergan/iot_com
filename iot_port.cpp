@@ -155,7 +155,17 @@ Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
         result =  IOT_FAIL;
         return result;
     }
-    result = key_push(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+    uint32_t prev_key = prev_key_get();
+
+    if((SelectZone != zone) || (prev_key == KEY_RELEASE) || ((prev_key & (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))) != prev_key))// prev key is it select?
+    {
+        SelectZone = zone;
+        result = key_push(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+    }
+    else if((prev_key & (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))) == prev_key) // prev key is it slider?
+    {
+        key_remove();
+    }
     switch(level)
     {
         case LEVEL_0:
