@@ -138,70 +138,75 @@ char Iot_Com::get_timer_display_low()
 /******************************************************/
 Iot_Status_t Iot_Com::power_on()
 {
-    return key_push(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
+    key_list.push_front(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
+    return IOT_SUCCES;
 }
 /******************************************************/
 Iot_Status_t Iot_Com::power_off()
 {
-    return key_push(KEY_BITS(KEY_ON_OFF));
+    key_list.push_front(KEY_BITS(KEY_ON_OFF));
+    return IOT_SUCCES;
 }
 /******************************************************/
 Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
 {
     Iot_Status_t result = IOT_SUCCES;
+    uint32_t prev_key;
 
-    if(zone >= IOT_NUMBER_OF_ZONE || level > LEVEL_DB)
+    if(zone >= IOT_NUMBER_OF_ZONE || level > LEVEL_B)
     {
         result =  IOT_FAIL;
         return result;
     }
-    uint32_t prev_key = prev_key_get();
 
-    if((SelectZone != zone) || (prev_key == KEY_RELEASE) || ((prev_key & (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))) != prev_key))// prev key is it select?
+    prev_key = key_list.front();
+
+    if((SelectZone != zone) || (prev_key == KEY_RELEASE) || ((prev_key & KEY_SLIDER_BAR) != prev_key))// prev key is it select?
     {
         SelectZone = zone;
-        result = key_push(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+        key_list.push_front(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
     }
-    else if((prev_key & (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))) == prev_key) // prev key is it slider?
+    else if((prev_key & KEY_SLIDER_BAR) == prev_key) // prev key is it slider?
     {
-        key_remove();
+        key_list.pop_front();
     }
     switch(level)
     {
         case LEVEL_0:
-            result = key_push(KEY_BITS(KEY_SA0));
+            key_list.push_front(KEY_BITS(KEY_SA0));
             break;
         case LEVEL_1:
-            result = key_push(KEY_BITS(KEY_SA1));
+            key_list.push_front(KEY_BITS(KEY_SA1));
             break;
         case LEVEL_2:
-            result = key_push(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
+            key_list.push_front(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
             break;
         case LEVEL_3:
-            result = key_push(KEY_BITS(KEY_SA3));
+            key_list.push_front(KEY_BITS(KEY_SA3));
             break;
         case LEVEL_4:
-            result = key_push(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
+            key_list.push_front(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
             break;
         case LEVEL_5:
-            result = key_push(KEY_BITS(KEY_SA5));
+            key_list.push_front(KEY_BITS(KEY_SA5));
             break;
         case LEVEL_6:
-            result = key_push(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
+            key_list.push_front(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
             break;
         case LEVEL_7:
-            result = key_push(KEY_BITS(KEY_SA7));
+            key_list.push_front(KEY_BITS(KEY_SA7));
             break;
         case LEVEL_8:
-            result = key_push(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
+            key_list.push_front(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
             break;
         case LEVEL_9:
-            result = key_push(KEY_BITS(KEY_SA9));
+            key_list.push_front(KEY_BITS(KEY_SA9));
             break;
         case LEVEL_B:
-            result = key_push(KEY_BITS(KEY_BOOST));
+            key_list.push_front(KEY_BITS(KEY_BOOST));
             break;
     }
+
     return result;
 }
 /******************************************************/

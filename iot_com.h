@@ -11,17 +11,17 @@
 #define IOT_COM_H
 
 #include <Wire.h>
+#include <bits/stdc++.h>
+using namespace std;
 
-#define IOT_API_VERSION        100 // V1.0.0
-#define IOT_DEVICE_TYPE        I6S02B
+#define IOT_API_VERSION            100 // V1.0.0
+#define IOT_DEVICE_TYPE            I6S02B
 #define IOT_KEY_TIME_TICK_MS       150
 #define IOT_DISPLAY_TIME_TICK_MS   50
-#define IOT_KEY_LIST_SIZE          32
 #define IOT_GET_BYTE_COUNT         14
 #define IOT_SEND_BYTE_COUNT        6
 #define IOT_NUMBER_OF_ZONE         4
 #define IOT_I2C_CRC16_INIT         0xFFFF
-
 
 #define   KEY_RELEASE  0
 #define   KEY_ZONE1    3
@@ -52,6 +52,7 @@
 
 #define KEY_BITS(x)  (1 << (x - 1))
 #define KEY_TIME_MS(x)  (x / 30)
+#define KEY_SLIDER_BAR (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))
 #define dbit(x)  ((uint8_t)1<<x)
 
 typedef enum
@@ -198,13 +199,11 @@ typedef struct
 class Iot_Com
 {
 private:
+    list<uint32_t> key_list;
     uint8_t i2c_addr;
     uint8_t RxCount;
     bool key_release = false;
     bool error_flag = false;
-    uint8_t KeyListStart = 0;
-    uint8_t KeyListEnd = 0;
-    uint32_t KeyListBuffer[IOT_KEY_LIST_SIZE];
     uint16_t crc16;
     Zone_t SelectZone;
     uint8_t api_version;
@@ -217,13 +216,7 @@ private:
     ReceiveBuffer_t ReceivedBuffer;
     Iot_DeviceStatus_t device_status;
     Iot_Status_t key_procces();
-    uint8_t key_count();    
     void Crc16_Calc_Byte(uint8_t byte);
-    bool key_get(uint32_t *key);
-    uint32_t prev_key_get();
-    void key_remove();
-    Iot_Status_t key_pop();
-    Iot_Status_t key_push(uint32_t key);
     Iot_Status_t key_send(uint32_t keys);
     Character_t CharacterCheck(uint8_t byte);
     char Asci_Contert_Of_Char(Character_t character);
@@ -232,7 +225,7 @@ private:
 public:
     Iot_Com(uint8_t addr, uint16_t pin_sda, uint16_t pin_clk);
     void init();
-    void procces();        
+    void procces();
     Iot_Status_t power_on();
     Iot_Status_t power_off();
     Iot_Status_t set_level(Zone_t zone, Level_t level);

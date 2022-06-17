@@ -9,81 +9,9 @@
 
 #include "iot_com.h"
 
+
 /******************************************************/
 /******************************************************/
-/******************************************************/
-uint8_t Iot_Com::key_count()
-{
-    return KeyListEnd - KeyListStart;
-}
-/******************************************************/
-bool Iot_Com::key_get(uint32_t *key)
-{
-    if(KeyListEnd - KeyListStart == 0)
-    {
-        *key = 0;
-        return false;
-    }
-    *key = KeyListBuffer[KeyListStart];
-    return true;
-}
-/******************************************************/
-uint32_t Iot_Com::prev_key_get()
-{
-    if(KeyListEnd - KeyListStart == 0)
-    {
-        return KEY_RELEASE;
-    }
-    if(KeyListEnd)
-    {
-        return KeyListBuffer[KeyListEnd - 1];
-    }
-    return KeyListBuffer[IOT_KEY_LIST_SIZE - 1];
-}
-/******************************************************/
-void Iot_Com::key_remove()
-{
-    if(KeyListEnd)
-    {
-        KeyListEnd--;
-    }
-    else
-    {
-        KeyListEnd = IOT_KEY_LIST_SIZE - 1;
-    }
-    KeyListBuffer[KeyListEnd] = KEY_RELEASE;
-}
-/******************************************************/
-Iot_Status_t Iot_Com::key_pop()
-{
-    if(KeyListEnd - KeyListStart == 0)
-    {
-        return IOT_FAIL;
-    }
-    if(++KeyListStart >= IOT_KEY_LIST_SIZE)
-    {
-        KeyListStart = 0;
-    }
-    return IOT_SUCCES;
-}
-/******************************************************/
-Iot_Status_t Iot_Com::key_push(uint32_t key)
-{
-    if((device_status == UNSUPPORTED_API) || (device_status == UNSUPPORTED_DEVICE) || (device_status == DEVICE_LOST))
-    {
-        return IOT_FAIL;
-    }
-    if(key_count() >= IOT_KEY_LIST_SIZE)
-    {
-        return IOT_FAIL;
-    }
-    KeyListBuffer[KeyListEnd] = key;
-    if(++KeyListEnd >= IOT_KEY_LIST_SIZE)
-    {
-        KeyListEnd = 0;
-    }
-    return IOT_SUCCES;
-}
 /******************************************************/
 Iot_Status_t Iot_Com::key_send(uint32_t keys)
 {
@@ -122,15 +50,18 @@ Iot_Status_t Iot_Com::key_procces()
     }
     else
     {
-        key_get(&key);
+        key = key_list.back();
 
         if(key == ReceivedBuffer.keyfeedback)
         {
-            //if((key & (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))) != key)
+            //if((key & KEY_SLIDER_BAR) != key)
             {
                 key_release = true;
             }
-            key_pop();
+            if(key_list.size())
+            {
+                key_list.pop_back();
+            }
         }
         else
         {
