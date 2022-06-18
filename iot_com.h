@@ -209,6 +209,7 @@ private:
     uint8_t api_version;
     DeviceType_t device_type;
     Iot_ZoneErrors_t ZoneErrors[IOT_NUMBER_OF_ZONE];
+    bool ZoneDot[IOT_NUMBER_OF_ZONE];
     char ZoneChar[IOT_NUMBER_OF_ZONE];
     char TimeZoneChar[2];
     Level_t ZoneLevel[IOT_NUMBER_OF_ZONE];
@@ -235,6 +236,7 @@ public:
     Iot_DeviceStatus_t get_device_status();
     uint8_t get_zone_error(Zone_t zone);
     char get_zone_display(Zone_t zone);
+    bool get_zone_display_dot(Zone_t zone);
     char get_timer_display_high();
     char get_timer_display_low();
 };

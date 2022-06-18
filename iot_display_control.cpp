@@ -98,6 +98,15 @@ void Iot_Com::character_handler()
 
     for(zone = 0; zone < IOT_NUMBER_OF_ZONE; zone++)
     {
+        if(ReceivedBuffer.display[zone] & dbit(seg_db))
+        {
+            ZoneDot[zone] = true;
+        }
+        else
+        {
+            ZoneDot[zone] = false;
+        }
+        ReceivedBuffer.display[zone] &= ~dbit(seg_db);
         ZoneChar[zone] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[zone]));
         if(ZoneChar[zone] >= '0' && ZoneChar[zone] <= '9')
         {
@@ -176,6 +185,8 @@ void Iot_Com::character_handler()
             }
         }
     }
+    ReceivedBuffer.display[IOT_NUMBER_OF_ZONE] &= ~dbit(seg_db);
+    ReceivedBuffer.display[IOT_NUMBER_OF_ZONE + 1] &= ~dbit(seg_db);
     TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[IOT_NUMBER_OF_ZONE + 1]));
     TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[IOT_NUMBER_OF_ZONE]));
 }

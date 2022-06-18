@@ -126,6 +126,11 @@ char Iot_Com::get_zone_display(Zone_t zone)
     return ZoneChar[zone];
 }
 /******************************************************/
+bool Iot_Com::get_zone_display_dot(Zone_t zone)
+{
+    return ZoneDot[zone];
+}
+/******************************************************/
 char Iot_Com::get_timer_display_high()
 {
     return TimeZoneChar[0];
