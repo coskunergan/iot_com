@@ -24,6 +24,7 @@ using namespace std;
 #define IOT_BLINK_TIMEOUT_COUNT    20
 #define IOT_I2C_CRC16_INIT         0xFFFF
 #define IOT_TIME_MS                millis()
+#define IOT_AUTH_TIMEOUT_SEC       900
 
 #define   KEY_RELEASE  0
 #define   KEY_ZONE1    3
@@ -220,6 +221,8 @@ private:
     bool key_release = false;
     bool error_flag = false;
     uint16_t crc16;
+    uint16_t safety_start_timer;
+    bool authority_check;
     bool dot_status[IOT_NUMBER_OF_ZONE];
     uint8_t dot_blink_count[IOT_NUMBER_OF_ZONE];
     uint8_t display_blink_count;

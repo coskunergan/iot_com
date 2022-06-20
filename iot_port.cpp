@@ -33,6 +33,7 @@ void Iot_Com::procces()
 {
     static uint32_t DisplayTimePreviousMillis = 0;
     static uint32_t KeyTimePreviousMillis = 0;
+    static uint8_t second_count = 0;
     bool crc_check = false;
     //----------------------
     while(0 < Wire.available())
@@ -97,6 +98,17 @@ void Iot_Com::procces()
     {
         DisplayTimePreviousMillis = currentMillis;
         display_procces();
+        if(++second_count > (1000 / IOT_DISPLAY_GET_TIME_MS))
+        {
+            second_count = 0;
+            if(safety_start_timer)
+            {
+                if(--safety_start_timer == 0)
+                {
+                    authority_check = false;
+                }
+            }
+        }
     }
     //----------------------
 }
@@ -138,7 +150,20 @@ uint8_t Iot_Com::get_zone_timer_value(Zone_t zone)
 /******************************************************/
 Iot_Status_t Iot_Com::power_on()
 {
-    key_list.push_front(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
+    if(device_status != DEVICE_OFF)
+    {
+        return IOT_FAIL;
+    }
+    if(authority_check == true)
+    {
+        key_list.push_front(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
+    }
+    else
+    {
+        safety_start_timer = IOT_AUTH_TIMEOUT_SEC;
+        authority_check = true;
+        key_list.push_front(KEY_BITS(KEY_LOCK) | KEY_BITS(KEY_LONG));
+    }
     return IOT_SUCCES;
 }
 /******************************************************/
@@ -157,6 +182,14 @@ Iot_Status_t Iot_Com::set_zone_level(Zone_t zone, Iot_Level_t level)
     {
         result =  IOT_FAIL;
         return result;
+    }
+    if(authority_check == false)
+    {
+        if(level > zone_level[zone])
+        {
+            result =  IOT_FAIL;
+            return result;
+        }
     }
 
     prev_key = key_list.front();
