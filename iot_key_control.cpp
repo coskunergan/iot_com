@@ -39,7 +39,7 @@ Iot_Status_t Iot_Com::key_procces()
 
     if(key_release == true)
     {
-        if(ReceivedBuffer.keyfeedback != KEY_RELEASE)
+        if(receive_buffer.keyfeedback != KEY_RELEASE)
         {
             return key_send(KEY_RELEASE);
         }
@@ -52,7 +52,7 @@ Iot_Status_t Iot_Com::key_procces()
     {
         key = key_list.back();
 
-        if(key == ReceivedBuffer.keyfeedback)
+        if(key == receive_buffer.keyfeedback)
         {
             //if((key & KEY_SLIDER_BAR) != key)
             {

@@ -37,43 +37,43 @@ void Iot_Com::procces()
     //----------------------
     while(0 < Wire.available())
     {
-        uint8_t *temp = (uint8_t *)&TempBuffer;
-        temp += RxCount;
+        uint8_t *temp = (uint8_t *)&temp_buffer;
+        temp += rx_count;
         *temp = Wire.read();
 
-        if(RxCount < IOT_GET_BYTE_COUNT - 2)
+        if(rx_count < IOT_GET_BYTE_COUNT - 2)
         {
             Crc16_Calc_Byte(*temp);
         }
-        else if(RxCount == IOT_GET_BYTE_COUNT - 1)
+        else if(rx_count == IOT_GET_BYTE_COUNT - 1)
         {
-            if(crc16 == TempBuffer.crc16)
+            if(crc16 == temp_buffer.crc16)
             {
                 crc_check = true;
-                ReceivedBuffer = TempBuffer;
+                receive_buffer = temp_buffer;
             }
         }
 
         if(crc_check == true)
         {
             crc_check = false;
-            if(ReceivedBuffer.api_version != IOT_API_VERSION)
+            if(receive_buffer.api_version != IOT_API_VERSION)
             {
                 device_status = UNSUPPORTED_API;
             }
-            api_version = (DeviceType_t)ReceivedBuffer.api_version;
-            if(ReceivedBuffer.device_type != IOT_DEVICE_TYPE)
+            api_version = (DeviceType_t)receive_buffer.api_version;
+            if(receive_buffer.device_type != IOT_DEVICE_TYPE)
             {
                 device_status = UNSUPPORTED_DEVICE;
             }
-            device_type = (DeviceType_t)ReceivedBuffer.device_type;
+            device_type = (DeviceType_t)receive_buffer.device_type;
             if((device_status != UNSUPPORTED_API) && (device_status != UNSUPPORTED_DEVICE))
             {
-                if(ReceivedBuffer.display[0] == 0x9) // PAUSE KEY
+                if(receive_buffer.display[0] == 0x9) // PAUSE KEY
                 {
                     device_status = DEVICE_PAUSE;
                 }
-                else if(ReceivedBuffer.display[0] | ReceivedBuffer.display[1] | ReceivedBuffer.display[2] | ReceivedBuffer.display[3])
+                else if(receive_buffer.display[0] | receive_buffer.display[1] | receive_buffer.display[2] | receive_buffer.display[3])
                 {
                     device_status = DEVICE_ON;
                 }
@@ -84,26 +84,21 @@ void Iot_Com::procces()
             }
             character_handler();
         }
-        RxCount++;
+        rx_count++;
     }
     //----------------------
-    uint32_t currentMillis = millis();
-    if(currentMillis - KeyTimePreviousMillis >= IOT_KEY_TIME_TICK_MS)
+    uint32_t currentMillis = IOT_TIME_MS;
+    if(currentMillis - KeyTimePreviousMillis >= IOT_KEY_SEND_TIME_MS)
     {
         KeyTimePreviousMillis = currentMillis;
         key_procces();
     }
-    if(currentMillis - DisplayTimePreviousMillis >= IOT_DISPLAY_TIME_TICK_MS)
+    if(currentMillis - DisplayTimePreviousMillis >= IOT_DISPLAY_GET_TIME_MS)
     {
         DisplayTimePreviousMillis = currentMillis;
         display_procces();
     }
     //----------------------
-}
-/******************************************************/
-uint8_t Iot_Com::get_zone_error(Zone_t zone)
-{
-    return ZoneErrors[zone].Value;
 }
 /******************************************************/
 Iot_DeviceStatus_t Iot_Com::get_device_status()
@@ -121,24 +116,24 @@ DeviceType_t Iot_Com::get_device_type()
     return device_type;
 }
 /******************************************************/
-char Iot_Com::get_zone_display(Zone_t zone)
+uint8_t Iot_Com::get_zone_status(Zone_t zone)
 {
-    return ZoneChar[zone];
+    return zone_status[zone].value;
 }
 /******************************************************/
-bool Iot_Com::get_zone_display_dot(Zone_t zone)
+uint8_t Iot_Com::get_zone_error(Zone_t zone)
 {
-    return ZoneDot[zone];
+    return zone_errors[zone].value;
 }
 /******************************************************/
-char Iot_Com::get_timer_display_high()
+bool Iot_Com::get_zone_dot_status(Zone_t zone)
 {
-    return TimeZoneChar[0];
+    return dot_status[zone];
 }
 /******************************************************/
-char Iot_Com::get_timer_display_low()
+uint8_t Iot_Com::get_zone_timer_value(Zone_t zone)
 {
-    return TimeZoneChar[1];
+    return timer_value[zone];
 }
 /******************************************************/
 Iot_Status_t Iot_Com::power_on()
@@ -153,7 +148,7 @@ Iot_Status_t Iot_Com::power_off()
     return IOT_SUCCES;
 }
 /******************************************************/
-Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
+Iot_Status_t Iot_Com::set_zone_level(Zone_t zone, Iot_Level_t level)
 {
     Iot_Status_t result = IOT_SUCCES;
     uint32_t prev_key;
@@ -166,9 +161,9 @@ Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
 
     prev_key = key_list.front();
 
-    if((SelectZone != zone) || (prev_key == KEY_RELEASE) || ((prev_key & KEY_SLIDER_BAR) != prev_key))// prev key is it select?
+    if((select_zone != zone) || (prev_key == KEY_RELEASE) || ((prev_key & KEY_SLIDER_BAR) != prev_key))// prev key is it select?
     {
-        SelectZone = zone;
+        select_zone = zone;
         key_list.push_front(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
     }
     else if((prev_key & KEY_SLIDER_BAR) == prev_key) // prev key is it slider?
@@ -215,14 +210,9 @@ Iot_Status_t Iot_Com::set_level(Zone_t zone, Level_t level)
     return result;
 }
 /******************************************************/
-Iot_Status_t Iot_Com::get_level(Zone_t zone, Level_t *level)
+Iot_Level_t Iot_Com::get_zone_level(Zone_t zone)
 {
-    if(zone >= IOT_NUMBER_OF_ZONE)
-    {
-        return IOT_FAIL;
-    }
-    *level = ZoneLevel[zone];
-    return IOT_SUCCES;
+    return zone_level[zone];
 }
 /******************************************************/
 /******************************************************/

@@ -16,12 +16,14 @@ using namespace std;
 
 #define IOT_API_VERSION            100 // V1.0.0
 #define IOT_DEVICE_TYPE            I6S02B
-#define IOT_KEY_TIME_TICK_MS       150
-#define IOT_DISPLAY_TIME_TICK_MS   50
+#define IOT_KEY_SEND_TIME_MS       150
+#define IOT_DISPLAY_GET_TIME_MS    50
 #define IOT_GET_BYTE_COUNT         14
 #define IOT_SEND_BYTE_COUNT        6
 #define IOT_NUMBER_OF_ZONE         4
+#define IOT_BLINK_TIMEOUT_COUNT    20
 #define IOT_I2C_CRC16_INIT         0xFFFF
+#define IOT_TIME_MS                millis()
 
 #define   KEY_RELEASE  0
 #define   KEY_ZONE1    3
@@ -50,6 +52,7 @@ using namespace std;
 #define seg_g 3
 #define seg_db  4
 
+#define IS_IT_NUMBER(x) (x >= '0' && x <= '9')
 #define KEY_BITS(x)  (1 << (x - 1))
 #define KEY_TIME_MS(x)  (x / 30)
 #define KEY_SLIDER_BAR (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))
@@ -87,21 +90,33 @@ typedef enum
     LEVEL_9,
     LEVEL_B,
     LEVEL_DB
-} Level_t;
+} Iot_Level_t;
 
 typedef union
 {
-    uint8_t Value;
+    uint8_t value;
     struct
     {
-        uint8_t F1_Error : 1;//  Power driver Data Communication fail
-        uint8_t E1_Error : 1;//  Plate Extreme overheat
-        uint8_t E2_Error : 1;//  IGBT overheat
-        uint8_t E3_Error : 1;//  High input voltage
-        uint8_t E4_Error : 1;//  Low input voltage
-        uint8_t Touch_Error : 1;// Water contact the touch plate
+        uint8_t F1_error : 1;//  Power driver Data Communication fail
+        uint8_t E1_error : 1;//  Plate Extreme overheat
+        uint8_t E2_error : 1;//  IGBT overheat
+        uint8_t E3_error : 1;//  High input voltage
+        uint8_t E4_error : 1;//  Low input voltage
+        uint8_t touch_error : 1;// Water contact the touch plate
     } bits;
 } Iot_ZoneErrors_t;
+
+typedef union
+{
+    uint8_t value;
+    struct
+    {
+        uint8_t heat : 1;
+        uint8_t no_pan : 1;
+        uint8_t stby : 1;
+        uint8_t burning : 1;
+    } bits;
+} Iot_ZoneStatus_t;
 
 
 typedef enum
@@ -201,20 +216,29 @@ class Iot_Com
 private:
     list<uint32_t> key_list;
     uint8_t i2c_addr;
-    uint8_t RxCount;
+    uint8_t rx_count;
     bool key_release = false;
     bool error_flag = false;
     uint16_t crc16;
-    Zone_t SelectZone;
+    bool dot_status[IOT_NUMBER_OF_ZONE];
+    uint8_t dot_blink_count[IOT_NUMBER_OF_ZONE];
+    uint8_t display_blink_count;
+    uint8_t timer_value_count;
+    uint8_t timer_value_memory[IOT_NUMBER_OF_ZONE];
+    char display_memory[IOT_NUMBER_OF_ZONE];
+    bool dot_memory[IOT_NUMBER_OF_ZONE];
+    Zone_t select_zone;
     uint8_t api_version;
     DeviceType_t device_type;
-    Iot_ZoneErrors_t ZoneErrors[IOT_NUMBER_OF_ZONE];
-    bool ZoneDot[IOT_NUMBER_OF_ZONE];
-    char ZoneChar[IOT_NUMBER_OF_ZONE];
-    char TimeZoneChar[2];
-    Level_t ZoneLevel[IOT_NUMBER_OF_ZONE];
-    ReceiveBuffer_t TempBuffer;
-    ReceiveBuffer_t ReceivedBuffer;
+    Iot_ZoneErrors_t zone_errors[IOT_NUMBER_OF_ZONE];
+    Iot_ZoneStatus_t zone_status[IOT_NUMBER_OF_ZONE];
+    uint8_t timer_value[IOT_NUMBER_OF_ZONE];
+    bool zone_dot[IOT_NUMBER_OF_ZONE];
+    char zone_char[IOT_NUMBER_OF_ZONE];
+    char timezone_char[2];
+    Iot_Level_t zone_level[IOT_NUMBER_OF_ZONE];
+    ReceiveBuffer_t temp_buffer;
+    ReceiveBuffer_t receive_buffer;
     Iot_DeviceStatus_t device_status;
     Iot_Status_t key_procces();
     void Crc16_Calc_Byte(uint8_t byte);
@@ -229,15 +253,15 @@ public:
     void procces();
     Iot_Status_t power_on();
     Iot_Status_t power_off();
-    Iot_Status_t set_level(Zone_t zone, Level_t level);
-    Iot_Status_t get_level(Zone_t zone, Level_t *level);
+    Iot_Status_t set_zone_level(Zone_t zone, Iot_Level_t level);
+    Iot_Level_t get_zone_level(Zone_t zone);
     uint8_t get_api_version();
     DeviceType_t get_device_type();
     Iot_DeviceStatus_t get_device_status();
     uint8_t get_zone_error(Zone_t zone);
-    char get_zone_display(Zone_t zone);
-    bool get_zone_display_dot(Zone_t zone);
-    char get_timer_display_high();
-    char get_timer_display_low();
+    uint8_t get_zone_status(Zone_t zone);
+    bool get_zone_dot_status(Zone_t zone);
+    bool get_zone_timer_status(Zone_t zone);
+    uint8_t get_zone_timer_value(Zone_t zone);
 };
 #endif

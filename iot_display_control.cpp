@@ -94,63 +94,165 @@ char Iot_Com:: Asci_Contert_Of_Char(Character_t character)
 /******************************************************/
 void Iot_Com::character_handler()
 {
-    uint8_t zone;
+    uint8_t zone, temp = 0;
 
     for(zone = 0; zone < IOT_NUMBER_OF_ZONE; zone++)
     {
-        if(ReceivedBuffer.display[zone] & dbit(seg_db))
+        //----------------- DOT CASE -------------------
+        if(receive_buffer.display[zone] & dbit(seg_db))
         {
-            ZoneDot[zone] = true;
+            zone_dot[zone] = true;
         }
         else
         {
-            ZoneDot[zone] = false;
+            zone_dot[zone] = false;
         }
-        ReceivedBuffer.display[zone] &= ~dbit(seg_db);
-        ZoneChar[zone] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[zone]));
-        if(ZoneChar[zone] >= '0' && ZoneChar[zone] <= '9')
+        if(dot_memory[zone] != zone_dot[zone])
         {
-            ZoneLevel[zone] = (Level_t)(ZoneChar[zone] - '0');
-        }
-        else if(ZoneChar[zone] == 'P')
-        {
-            ZoneLevel[zone] = LEVEL_B;
-        }
-        else if(ZoneChar[zone] == '-')
-        {
-            ZoneLevel[zone] = LEVEL_0;
-        }
-        //------------------------------
-        if(ZoneErrors[zone].bits.F1_Error == 1)
-        {
-            if(ZoneChar[zone] != 'F' && ZoneChar[zone] != '1')
+            dot_blink_count[zone] = 0;
+            dot_memory[zone] = zone_dot[zone];
+            if(zone_dot[zone])
             {
-                ZoneErrors[zone].bits.F1_Error = 0;
+                dot_status[zone] = true;
+            }
+            if(IS_IT_NUMBER(timezone_char[0]) && IS_IT_NUMBER(timezone_char[1]))
+            {
+                temp = (timezone_char[0] - '0') * 10;
+                temp += (timezone_char[1] - '0');
+                if(++timer_value_count > 4)
+                {
+                    timer_value_count = 0;
+                    timer_value[zone] = timer_value_memory[zone];
+                }
+                else if(temp != timer_value_memory[zone])
+                {
+                    timer_value_count = 0;
+                    timer_value_memory[zone] = temp;
+                    if(temp)
+                    {
+                        timer_value[zone] = 1; // last 1 min
+                    }
+                }
             }
         }
         else
         {
-            if(ZoneChar[zone] == 'F')
+            if(++dot_blink_count[zone] > IOT_BLINK_TIMEOUT_COUNT)
             {
-                ZoneErrors[zone].bits.F1_Error = 1;
+                dot_blink_count[zone] = 0;
+                timer_value[zone] = 0;
+                if(zone_dot[zone])
+                {
+                    dot_status[zone] = true;
+                }
+                else
+                {
+                    dot_status[zone] = false;
+                }
+            }
+        }
+        //-------------- CONVERT CHAR ------------------
+        receive_buffer.display[zone] &= ~dbit(seg_db);
+        zone_char[zone] = Asci_Contert_Of_Char(CharacterCheck(receive_buffer.display[zone]));
+        //--------------- LEVEL CASE -------------------
+        if(IS_IT_NUMBER(zone_char[zone]))
+        {
+            zone_level[zone] = (Iot_Level_t)(zone_char[zone] - '0');
+        }
+        else if(zone_char[zone] == 'P')
+        {
+            zone_level[zone] = LEVEL_B;
+        }
+        else if(zone_char[zone] == '-')
+        {
+            zone_level[zone] = LEVEL_0;
+        }
+        //-------------- STATUS CASE -------------------
+        if(display_memory[zone] != zone_char[zone])
+        {
+            display_blink_count = 0;
+            display_memory[zone] = zone_char[zone];
+            if(zone_char[zone] == 'U')
+            {
+                zone_status[zone].bits.no_pan = 1;
+                zone_status[zone].bits.burning = 0;
+            }
+            if(zone_char[zone] == 'H')
+            {
+                zone_status[zone].bits.heat = 1;
+                zone_status[zone].bits.burning = 0;
+            }
+        }
+        else
+        {
+            if(++display_blink_count > IOT_BLINK_TIMEOUT_COUNT)
+            {
+                display_blink_count = 0;
+                if(zone_char[zone] == 'U')
+                {
+                    zone_status[zone].bits.no_pan = 1;
+                }
+                else
+                {
+                    zone_status[zone].bits.no_pan = 0;
+                }
+                if(zone_char[zone] == 'H')
+                {
+                    zone_status[zone].bits.heat = 1;
+                }
+                else
+                {
+                    zone_status[zone].bits.heat = 0;
+                }
+                if(zone_char[zone] == '-')
+                {
+                    zone_status[zone].bits.stby = 1;
+                }
+                else
+                {
+                    zone_status[zone].bits.stby = 0;
+                }
+                if((zone_char[zone] >= '1' && zone_char[zone] <= '9') || (zone_char[zone] == 'P'))
+                {
+                    zone_status[zone].bits.burning = 1;
+                }
+                else
+                {
+                    zone_status[zone].bits.burning = 0;
+                }
+            }
+        }
+        //-------------- ERROR CASE---------------------
+        if(zone_errors[zone].bits.F1_error == 1)
+        {
+            if(zone_char[zone] != 'F' && zone_char[zone] != '1')
+            {
+                zone_errors[zone].bits.F1_error = 0;
+            }
+        }
+        else
+        {
+            if(zone_char[zone] == 'F')
+            {
+                zone_errors[zone].bits.F1_error = 1;
             }
         }
         //-----------------------------
         if(error_flag == true)
         {
-            switch(ZoneChar[zone])
+            switch(zone_char[zone])
             {
                 case '1':
-                    ZoneErrors[zone].bits.E1_Error = 1;
+                    zone_errors[zone].bits.E1_error = 1;
                     break;
                 case '2':
-                    ZoneErrors[zone].bits.E2_Error = 1;
+                    zone_errors[zone].bits.E2_error = 1;
                     break;
                 case '3':
-                    ZoneErrors[zone].bits.E3_Error = 1;
+                    zone_errors[zone].bits.E3_error = 1;
                     break;
                 case '4':
-                    ZoneErrors[zone].bits.E4_Error = 1;
+                    zone_errors[zone].bits.E4_error = 1;
                     break;
                 case 'E':
                     break;
@@ -161,39 +263,39 @@ void Iot_Com::character_handler()
         }
         else
         {
-            if(ZoneChar[zone] == 'E')
+            if(zone_char[zone] == 'E')
             {
                 error_flag = true;
             }
             else
             {
-                ZoneErrors[zone].bits.E1_Error = 0;
-                ZoneErrors[zone].bits.E2_Error = 0;
-                ZoneErrors[zone].bits.E3_Error = 0;
-                ZoneErrors[zone].bits.E4_Error = 0;
+                zone_errors[zone].bits.E1_error = 0;
+                zone_errors[zone].bits.E2_error = 0;
+                zone_errors[zone].bits.E3_error = 0;
+                zone_errors[zone].bits.E4_error = 0;
             }
         }
-        if(TimeZoneChar[0] == 'E' && TimeZoneChar[1] == 'R')
+        if(timezone_char[0] == 'E' && timezone_char[1] == 'R')
         {
-            ZoneErrors[zone].bits.Touch_Error = 1;
+            zone_errors[zone].bits.touch_error = 1;
         }
-        else if(ZoneErrors[zone].bits.Touch_Error == 1)
+        else if(zone_errors[zone].bits.touch_error == 1)
         {
-            if(TimeZoneChar[0] != '0' && TimeZoneChar[1] != '3')
+            if(timezone_char[0] != '0' && timezone_char[1] != '3')
             {
-                ZoneErrors[zone].bits.Touch_Error = 0;
+                zone_errors[zone].bits.touch_error = 0;
             }
         }
     }
-    ReceivedBuffer.display[IOT_NUMBER_OF_ZONE] &= ~dbit(seg_db);
-    ReceivedBuffer.display[IOT_NUMBER_OF_ZONE + 1] &= ~dbit(seg_db);
-    TimeZoneChar[0] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[IOT_NUMBER_OF_ZONE + 1]));
-    TimeZoneChar[1] = Asci_Contert_Of_Char(CharacterCheck(ReceivedBuffer.display[IOT_NUMBER_OF_ZONE]));
+    receive_buffer.display[IOT_NUMBER_OF_ZONE] &= ~dbit(seg_db);
+    receive_buffer.display[IOT_NUMBER_OF_ZONE + 1] &= ~dbit(seg_db);
+    timezone_char[0] = Asci_Contert_Of_Char(CharacterCheck(receive_buffer.display[IOT_NUMBER_OF_ZONE + 1]));
+    timezone_char[1] = Asci_Contert_Of_Char(CharacterCheck(receive_buffer.display[IOT_NUMBER_OF_ZONE]));
 }
 /******************************************************/
 void Iot_Com::display_procces()
 {
-    RxCount = 0;
+    rx_count = 0;
     crc16 = IOT_I2C_CRC16_INIT;
     Wire.requestFrom(0x60, IOT_GET_BYTE_COUNT);
 }
