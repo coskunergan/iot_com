@@ -65,6 +65,11 @@ Iot_Status_t Iot_Com::key_procces()
         }
         else
         {
+            if(key == 0 && authority_check == false)
+            {
+                authority_check = true;
+                safety_start_timer = IOT_AUTH_TIMEOUT_SEC;
+            }
             return key_send(key);
         }
     }

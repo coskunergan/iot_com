@@ -154,16 +154,7 @@ Iot_Status_t Iot_Com::power_on()
     {
         return IOT_FAIL;
     }
-    if(authority_check == true)
-    {
-        key_list.push_front(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
-    }
-    else
-    {
-        safety_start_timer = IOT_AUTH_TIMEOUT_SEC;
-        authority_check = true;
-        key_list.push_front(KEY_BITS(KEY_LOCK) | KEY_BITS(KEY_LONG));
-    }
+    key_list.push_front(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
     return IOT_SUCCES;
 }
 /******************************************************/
