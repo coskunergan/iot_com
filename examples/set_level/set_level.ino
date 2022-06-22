@@ -63,13 +63,11 @@ void loop()
     if((millis() - debugTime) > DEBUG_PERIOD)
     {
         debugTime = millis();
-        Serial.printf("API:V%d DEV:%d (%c)(%c)(%c)(%c)(%c%c)\r\n", Iot_Com.get_api_version(), Iot_Com.get_device_type(),
-                      Iot_Com.get_zone_display(ZONE_1),
-                      Iot_Com.get_zone_display(ZONE_2),
-                      Iot_Com.get_zone_display(ZONE_3),
-                      Iot_Com.get_zone_display(ZONE_4),
-                      Iot_Com.get_timer_display_high(),
-                      Iot_Com.get_timer_display_low());
+        Serial.printf("API:V%d DEV:%d (%d)(%d)(%d)(%d)\r\n", Iot_Com.get_api_version(), Iot_Com.get_device_type(),
+                      Iot_Com.get_zone_level(ZONE_1),
+                      Iot_Com.get_zone_level(ZONE_2),
+                      Iot_Com.get_zone_level(ZONE_3),
+                      Iot_Com.get_zone_level(ZONE_4));
     }
 }
 /*****************************************************************/
