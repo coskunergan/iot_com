@@ -226,8 +226,6 @@ private:
     bool dot_status[IOT_NUMBER_OF_ZONE];
     uint8_t dot_blink_count[IOT_NUMBER_OF_ZONE];
     uint8_t display_blink_count;
-    uint8_t timer_value_count;
-    uint8_t timer_value_memory[IOT_NUMBER_OF_ZONE];
     char display_memory[IOT_NUMBER_OF_ZONE];
     bool dot_memory[IOT_NUMBER_OF_ZONE];
     Zone_t select_zone;
@@ -264,7 +262,6 @@ public:
     uint8_t get_zone_error(Zone_t zone);
     uint8_t get_zone_status(Zone_t zone);
     bool get_zone_dot_status(Zone_t zone);
-    bool get_zone_timer_status(Zone_t zone);
     uint8_t get_zone_timer_value(Zone_t zone);
 };
 #endif

@@ -114,24 +114,10 @@ void Iot_Com::character_handler()
             if(zone_dot[zone])
             {
                 dot_status[zone] = true;
-            }
-            if(IS_IT_NUMBER(timezone_char[0]) && IS_IT_NUMBER(timezone_char[1]))
-            {
-                temp = (timezone_char[0] - '0') * 10;
-                temp += (timezone_char[1] - '0');
-                if(++timer_value_count > 4)
+                if(IS_IT_NUMBER(timezone_char[0]) && IS_IT_NUMBER(timezone_char[1]))
                 {
-                    timer_value_count = 0;
-                    timer_value[zone] = timer_value_memory[zone];
-                }
-                else if(temp != timer_value_memory[zone])
-                {
-                    timer_value_count = 0;
-                    timer_value_memory[zone] = temp;
-                    if(temp)
-                    {
-                        timer_value[zone] = 1; // last 1 min
-                    }
+                    timer_value[zone] = (timezone_char[0] - '0') * 10;
+                    timer_value[zone] += (timezone_char[1] - '0');
                 }
             }
         }
@@ -172,15 +158,14 @@ void Iot_Com::character_handler()
         {
             display_blink_count = 0;
             display_memory[zone] = zone_char[zone];
+            zone_status[zone].bits.burning = 0;
             if(zone_char[zone] == 'U')
             {
                 zone_status[zone].bits.no_pan = 1;
-                zone_status[zone].bits.burning = 0;
             }
             if(zone_char[zone] == 'H')
             {
                 zone_status[zone].bits.heat = 1;
-                zone_status[zone].bits.burning = 0;
             }
         }
         else
