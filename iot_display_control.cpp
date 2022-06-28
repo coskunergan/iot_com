@@ -141,17 +141,17 @@ void Iot_Com::character_handler()
         receive_buffer.display[zone] &= ~dbit(seg_db);
         zone_char[zone] = Asci_Contert_Of_Char(CharacterCheck(receive_buffer.display[zone]));
         //--------------- LEVEL CASE -------------------
-        if(IS_IT_NUMBER(zone_char[zone]))
+        if(device_status != DEVICE_ON)
+        {
+            zone_level[zone] = LEVEL_0;
+        }        
+        else if(IS_IT_NUMBER(zone_char[zone]))
         {
             zone_level[zone] = (Iot_Level_t)(zone_char[zone] - '0');
         }
         else if(zone_char[zone] == 'P')
         {
             zone_level[zone] = LEVEL_B;
-        }
-        else if(zone_char[zone] == '-')
-        {
-            zone_level[zone] = LEVEL_0;
         }
         //-------------- STATUS CASE -------------------
         if(display_memory[zone] != zone_char[zone])
