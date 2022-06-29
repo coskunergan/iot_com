@@ -144,7 +144,7 @@ void Iot_Com::character_handler()
         if(device_status != DEVICE_ON)
         {
             zone_level[zone] = LEVEL_0;
-        }        
+        }
         else if(IS_IT_NUMBER(zone_char[zone]))
         {
             zone_level[zone] = (Iot_Level_t)(zone_char[zone] - '0');

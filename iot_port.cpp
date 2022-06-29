@@ -97,6 +97,17 @@ void Iot_Com::procces()
     if(currentMillis - DisplayTimePreviousMillis >= IOT_DISPLAY_GET_TIME_MS)
     {
         DisplayTimePreviousMillis = currentMillis;
+        if(rx_count == 0)
+        {
+            if(++lost_connection_count > LOST_CONN_LIMIT)
+            {
+                device_status = DEVICE_LOST;
+            }
+        }
+        else
+        {
+            lost_connection_count = 0;
+        }
         display_procces();
         if(++second_count > (1000 / IOT_DISPLAY_GET_TIME_MS))
         {
