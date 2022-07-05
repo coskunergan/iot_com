@@ -74,7 +74,19 @@ void Iot_Com::procces()
                 {
                     device_status = DEVICE_PAUSE;
                 }
-                else if(receive_buffer.display[0] | receive_buffer.display[1] | receive_buffer.display[2] | receive_buffer.display[3])
+                else if(receive_buffer.display[0] && zone_status[0].bits.heat == 0)
+                {
+                    device_status = DEVICE_ON;
+                }
+                else if(receive_buffer.display[1] && zone_status[1].bits.heat == 0)
+                {
+                    device_status = DEVICE_ON;
+                }
+                else if(receive_buffer.display[2] && zone_status[2].bits.heat == 0)
+                {
+                    device_status = DEVICE_ON;
+                }
+                else if(receive_buffer.display[3] && zone_status[3].bits.heat == 0)
                 {
                     device_status = DEVICE_ON;
                 }
