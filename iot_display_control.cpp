@@ -159,6 +159,7 @@ void Iot_Com::character_handler()
             display_blink_count = 0;
             display_memory[zone] = zone_char[zone];
             zone_status[zone].bits.burning = 0;
+            zone_status[zone].bits.stby = 0;
             if(zone_char[zone] == 'U')
             {
                 zone_status[zone].bits.no_pan = 1;
