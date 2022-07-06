@@ -156,7 +156,7 @@ void Iot_Com::character_handler()
         //-------------- STATUS CASE -------------------
         if(display_memory[zone] != zone_char[zone])
         {
-            display_blink_count = 0;
+            display_blink_count[zone] = 0;
             display_memory[zone] = zone_char[zone];
             zone_status[zone].bits.burning = 0;
             zone_status[zone].bits.stby = 0;
@@ -171,9 +171,9 @@ void Iot_Com::character_handler()
         }
         else
         {
-            if(++display_blink_count > IOT_BLINK_TIMEOUT_COUNT)
+            if(++display_blink_count[zone] > IOT_BLINK_TIMEOUT_COUNT)
             {
-                display_blink_count = 0;
+                display_blink_count[zone] = 0;
                 if(zone_char[zone] == 'U')
                 {
                     zone_status[zone].bits.no_pan = 1;

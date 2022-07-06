@@ -226,7 +226,7 @@ private:
     bool authority_check;
     bool dot_status[IOT_NUMBER_OF_ZONE];
     uint8_t dot_blink_count[IOT_NUMBER_OF_ZONE];
-    uint8_t display_blink_count;
+    uint8_t display_blink_count[IOT_NUMBER_OF_ZONE];
     uint8_t lost_connection_count;
     char display_memory[IOT_NUMBER_OF_ZONE];
     bool dot_memory[IOT_NUMBER_OF_ZONE];
