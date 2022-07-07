@@ -262,5 +262,75 @@ Iot_Level_t Iot_Com::get_zone_level(Zone_t zone)
     return zone_level[zone];
 }
 /******************************************************/
+Iot_Status_t Iot_Com::set_select_zone(Zone_t zone)
+{
+    Iot_Status_t result = IOT_SUCCES;
+    if(zone >= IOT_NUMBER_OF_ZONE)
+    {
+        result =  IOT_FAIL;
+        return result;
+    }
+    select_zone = zone;
+    key_list.push_front(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+    return result;
+}
+/******************************************************/
+Iot_Status_t Iot_Com::set_slider_value(Iot_Level_t level)
+{
+    Iot_Status_t result = IOT_SUCCES;
+    uint32_t prev_key;
+
+    if(level > LEVEL_B)
+    {
+        result =  IOT_FAIL;
+        return result;
+    }
+
+    prev_key = key_list.front();
+
+    if((prev_key != KEY_RELEASE) && (prev_key & KEY_SLIDER_BAR) == prev_key) // prev key is it slider?
+    {
+        key_list.pop_front();
+    }
+
+    switch(level)
+    {
+        case LEVEL_0:
+            key_list.push_front(KEY_BITS(KEY_SA0));
+            break;
+        case LEVEL_1:
+            key_list.push_front(KEY_BITS(KEY_SA1));
+            break;
+        case LEVEL_2:
+            key_list.push_front(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
+            break;
+        case LEVEL_3:
+            key_list.push_front(KEY_BITS(KEY_SA3));
+            break;
+        case LEVEL_4:
+            key_list.push_front(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
+            break;
+        case LEVEL_5:
+            key_list.push_front(KEY_BITS(KEY_SA5));
+            break;
+        case LEVEL_6:
+            key_list.push_front(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
+            break;
+        case LEVEL_7:
+            key_list.push_front(KEY_BITS(KEY_SA7));
+            break;
+        case LEVEL_8:
+            key_list.push_front(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
+            break;
+        case LEVEL_9:
+            key_list.push_front(KEY_BITS(KEY_SA9));
+            break;
+        case LEVEL_B:
+            key_list.push_front(KEY_BITS(KEY_BOOST));
+            break;
+    }
+    return result;
+}
+/******************************************************/
 /******************************************************/
 /******************************************************/
