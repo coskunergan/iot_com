@@ -258,6 +258,8 @@ public:
     Iot_Status_t power_off();
     Iot_Status_t set_zone_level(Zone_t zone, Iot_Level_t level);
     Iot_Level_t get_zone_level(Zone_t zone);
+    Iot_Status_t set_select_zone(Zone_t zone);
+    Iot_Status_t set_slider_value(Iot_Level_t level);
     uint8_t get_api_version();
     DeviceType_t get_device_type();
     Iot_DeviceStatus_t get_device_status();
