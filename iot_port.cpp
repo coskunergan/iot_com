@@ -177,13 +177,13 @@ Iot_Status_t Iot_Com::power_on()
     {
         return IOT_FAIL;
     }
-    key_list.push_front(KEY_BITS(KEY_ON_OFF) | KEY_BITS(KEY_LONG));
+    key_list.push_front(KEY_BITS(KEY_POWER) | KEY_BITS(KEY_LONG));
     return IOT_SUCCES;
 }
 /******************************************************/
 Iot_Status_t Iot_Com::power_off()
 {
-    key_list.push_front(KEY_BITS(KEY_ON_OFF));
+    key_list.push_front(KEY_BITS(KEY_POWER));
     return IOT_SUCCES;
 }
 /******************************************************/
@@ -220,37 +220,37 @@ Iot_Status_t Iot_Com::set_zone_level(Zone_t zone, Iot_Level_t level)
     switch(level)
     {
         case LEVEL_0:
-            key_list.push_front(KEY_BITS(KEY_SA0));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_0));
             break;
         case LEVEL_1:
-            key_list.push_front(KEY_BITS(KEY_SA1));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_1));
             break;
         case LEVEL_2:
-            key_list.push_front(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_2));
             break;
         case LEVEL_3:
-            key_list.push_front(KEY_BITS(KEY_SA3));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_3));
             break;
         case LEVEL_4:
-            key_list.push_front(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_4));
             break;
         case LEVEL_5:
-            key_list.push_front(KEY_BITS(KEY_SA5));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_5));
             break;
         case LEVEL_6:
-            key_list.push_front(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_6));
             break;
         case LEVEL_7:
-            key_list.push_front(KEY_BITS(KEY_SA7));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_7));
             break;
         case LEVEL_8:
-            key_list.push_front(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_8));
             break;
         case LEVEL_9:
-            key_list.push_front(KEY_BITS(KEY_SA9));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_9));
             break;
         case LEVEL_B:
-            key_list.push_front(KEY_BITS(KEY_BOOST));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_P));
             break;
     }
 
@@ -296,37 +296,37 @@ Iot_Status_t Iot_Com::set_slider_value(Iot_Level_t level)
     switch(level)
     {
         case LEVEL_0:
-            key_list.push_front(KEY_BITS(KEY_SA0));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_0));
             break;
         case LEVEL_1:
-            key_list.push_front(KEY_BITS(KEY_SA1));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_1));
             break;
         case LEVEL_2:
-            key_list.push_front(KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_2));
             break;
         case LEVEL_3:
-            key_list.push_front(KEY_BITS(KEY_SA3));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_3));
             break;
         case LEVEL_4:
-            key_list.push_front(KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_4));
             break;
         case LEVEL_5:
-            key_list.push_front(KEY_BITS(KEY_SA5));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_5));
             break;
         case LEVEL_6:
-            key_list.push_front(KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_6));
             break;
         case LEVEL_7:
-            key_list.push_front(KEY_BITS(KEY_SA7));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_7));
             break;
         case LEVEL_8:
-            key_list.push_front(KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_8));
             break;
         case LEVEL_9:
-            key_list.push_front(KEY_BITS(KEY_SA9));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_9));
             break;
         case LEVEL_B:
-            key_list.push_front(KEY_BITS(KEY_BOOST));
+            key_list.push_front(KEY_BITS(KEY_SLIDER_P));
             break;
     }
     return result;

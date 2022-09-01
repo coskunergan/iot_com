@@ -27,23 +27,28 @@ using namespace std;
 #define IOT_AUTH_TIMEOUT_SEC       900
 #define LOST_CONN_LIMIT            10
 
-#define   KEY_RELEASE  0
-#define   KEY_ZONE1    3
-#define   KEY_ZONE2    4
-#define   KEY_ZONE3    5
-#define   KEY_ZONE4    6
-#define   KEY_SA3      10
-#define   KEY_SA5      11
-#define   KEY_SA7       13
-#define   KEY_SA9       14
-#define   KEY_SA1       15
-#define   KEY_SA0       16
-#define   KEY_LOCK      17
-#define   KEY_ON_OFF    18
-#define   KEY_BOOST     19
-#define   KEY_TIMER     20
+#define KEY_RELEASE   0
 
-#define   KEY_LONG      32
+#define KEY_ZONE4            10
+#define KEY_ZONE3            11
+#define KEY_TIMER            16
+#define KEY_SLIDER_P         17
+#define KEY_SLIDER_9         20
+#define KEY_SLIDER_8         21
+#define KEY_SLIDER_7         22
+#define KEY_SLIDER_6         23
+#define KEY_SLIDER_5         24
+#define KEY_SLIDER_4         25
+#define KEY_SLIDER_3         26
+#define KEY_SLIDER_2         27
+#define KEY_SLIDER_1         30
+#define KEY_SLIDER_0         31
+#define KEY_LOCK             3
+#define KEY_POWER            4
+#define KEY_ZONE1            13
+#define KEY_ZONE2            12
+
+#define KEY_LONG             9
 
 #define seg_a  7
 #define seg_b 6
@@ -57,7 +62,8 @@ using namespace std;
 #define IS_IT_NUMBER(x) (x >= '0' && x <= '9')
 #define KEY_BITS(x)  (1 << (x - 1))
 #define KEY_TIME_MS(x)  (x / 30)
-#define KEY_SLIDER_BAR (KEY_BITS(KEY_SA0) | KEY_BITS(KEY_SA1) | KEY_BITS(KEY_SA3) | KEY_BITS(KEY_SA5) | KEY_BITS(KEY_SA7) | KEY_BITS(KEY_SA9) | KEY_BITS(KEY_BOOST))
+#define KEY_SLIDER_BAR (KEY_BITS(KEY_SLIDER_0) | KEY_BITS(KEY_SLIDER_1) | KEY_BITS(KEY_SLIDER_2) | KEY_BITS(KEY_SLIDER_3) | KEY_BITS(KEY_SLIDER_4) | KEY_BITS(KEY_SLIDER_5) \
+                      | KEY_BITS(KEY_SLIDER_6) | KEY_BITS(KEY_SLIDER_7) | KEY_BITS(KEY_SLIDER_8) | KEY_BITS(KEY_SLIDER_9) | KEY_BITS(KEY_SLIDER_P))
 #define dbit(x)  ((uint8_t)1<<x)
 
 typedef enum
@@ -166,6 +172,10 @@ const uint8_t Display_Char_Table[] =
     (dbit(seg_d)),// _
     (dbit(seg_b) | dbit(seg_c) | dbit(seg_e) | dbit(seg_f) | dbit(seg_g)), // H
     (dbit(seg_a) | dbit(seg_b) | dbit(seg_c) | dbit(seg_e) | dbit(seg_f)), // Bridge
+    (dbit(seg_a) | dbit(seg_d) | dbit(seg_e) | dbit(seg_f)), // Bridge_C
+    (dbit(seg_a) | dbit(seg_f)), // Bridge_UL
+    (dbit(seg_a) | dbit(seg_b)), // Bridge_UR
+    (dbit(seg_d) | dbit(seg_e)), // Bridge_DL
     (dbit(seg_c) | dbit(seg_d) | dbit(seg_e)), // WARM u
     (dbit(seg_a) | dbit(seg_d) | dbit(seg_g)), // = _DUAL
     0  // ' ' off
@@ -199,6 +209,10 @@ typedef enum
     CHAR__,
     CHAR_H,
     CHAR_BRIDGE,
+    CHAR_BRIDGE_C,
+    CHAR_BRIDGE_UL,
+    CHAR_BRIDGE_UR,
+    CHAR_BRIDGE_DL,    
     CHAR_WARM,
     CHAR_DUAL,
     CHAR_NULL
