@@ -211,7 +211,35 @@ Iot_Status_t Iot_Com::set_zone_level(Zone_t zone, Iot_Level_t level)
     if((select_zone != zone) || (prev_key == KEY_RELEASE) || ((prev_key & KEY_SLIDER_BAR) != prev_key))// prev key is it select?
     {
         select_zone = zone;
-        key_list.push_front(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+        switch(zone)
+        {
+            case ZONE_1:
+                key_list.push_front(KEY_BITS(KEY_ZONE1) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_2:
+                key_list.push_front(KEY_BITS(KEY_ZONE2) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_3:
+                key_list.push_front(KEY_BITS(KEY_ZONE3) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_4:
+                key_list.push_front(KEY_BITS(KEY_ZONE4) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_5:
+                key_list.push_front(KEY_BITS(KEY_ZONE5) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_6:
+                key_list.push_front(KEY_BITS(KEY_ZONE6) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_7:
+                key_list.push_front(KEY_BITS(KEY_ZONE7) | KEY_BITS(KEY_LONG));
+                break;
+            case ZONE_8:
+                key_list.push_front(KEY_BITS(KEY_ZONE8) | KEY_BITS(KEY_LONG));
+                break;
+            default:
+                break;
+        }
     }
     else if((prev_key & KEY_SLIDER_BAR) == prev_key) // prev key is it slider?
     {
@@ -271,7 +299,35 @@ Iot_Status_t Iot_Com::set_select_zone(Zone_t zone)
         return result;
     }
     select_zone = zone;
-    key_list.push_front(KEY_BITS(KEY_ZONE1 + zone) | KEY_BITS(KEY_LONG));
+    switch(zone)
+    {
+        case ZONE_1:
+            key_list.push_front(KEY_BITS(KEY_ZONE1) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_2:
+            key_list.push_front(KEY_BITS(KEY_ZONE2) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_3:
+            key_list.push_front(KEY_BITS(KEY_ZONE3) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_4:
+            key_list.push_front(KEY_BITS(KEY_ZONE4) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_5:
+            key_list.push_front(KEY_BITS(KEY_ZONE5) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_6:
+            key_list.push_front(KEY_BITS(KEY_ZONE6) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_7:
+            key_list.push_front(KEY_BITS(KEY_ZONE7) | KEY_BITS(KEY_LONG));
+            break;
+        case ZONE_8:
+            key_list.push_front(KEY_BITS(KEY_ZONE8) | KEY_BITS(KEY_LONG));
+            break;
+        default:
+            break;
+    }
     return result;
 }
 /******************************************************/

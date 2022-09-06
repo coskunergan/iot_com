@@ -15,14 +15,14 @@
 /******************************************************/
 Iot_Status_t Iot_Com::key_send(uint32_t keys)
 {
-    uint8_t buffer[IOT_SEND_BYTE_COUNT], i;
-    Wire.beginTransmission(0x60);
+    static uint8_t buffer[IOT_SEND_BYTE_COUNT];
+    Wire.beginTransmission(IOT_I2C_SLAVE_ADR >> 1);
     buffer[0] = keys;
     buffer[1] = keys >> 8;
     buffer[2] = keys >> 16;
     buffer[3] = keys >> 24;
     crc16 = IOT_I2C_CRC16_INIT;
-    for(i = 0; i < IOT_SEND_BYTE_COUNT - 2; i++)
+    for(int i = 0; i < IOT_SEND_BYTE_COUNT - 2; i++)
     {
         Crc16_Calc_Byte(buffer[i]);
     }

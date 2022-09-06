@@ -15,8 +15,8 @@
 Iot_Com::Iot_Com(uint8_t addr, uint16_t pin_sda, uint16_t pin_clk)
 {
     this->i2c_addr = addr;
-    Wire.setClock(10000);
     Wire.begin(pin_sda, pin_clk);    
+    Wire.setClock(10000);
     init();
 }
 /******************************************************/

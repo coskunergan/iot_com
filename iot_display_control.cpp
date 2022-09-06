@@ -283,7 +283,7 @@ void Iot_Com::display_procces()
 {
     rx_count = 0;
     crc16 = IOT_I2C_CRC16_INIT;
-    Wire.requestFrom(0x60, IOT_GET_BYTE_COUNT);
+    Wire.requestFrom(IOT_I2C_SLAVE_ADR >> 1, IOT_GET_BYTE_COUNT);
 }
 /******************************************************/
 /******************************************************/

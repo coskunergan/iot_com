@@ -14,8 +14,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define IOT_API_VERSION            100 // V1.0.0
+#define IOT_API_VERSION            101 // V1.0.1
 #define IOT_DEVICE_TYPE            I6S02B
+#define IOT_I2C_SLAVE_ADR          0xC0
 #define IOT_KEY_SEND_TIME_MS       150
 #define IOT_DISPLAY_GET_TIME_MS    50
 #define IOT_GET_BYTE_COUNT         14
@@ -27,7 +28,7 @@ using namespace std;
 #define IOT_AUTH_TIMEOUT_SEC       900
 #define LOST_CONN_LIMIT            10
 
-#define KEY_RELEASE   0
+#define KEY_RELEASE          0
 
 #define KEY_ZONE4            10
 #define KEY_ZONE3            11
@@ -50,6 +51,11 @@ using namespace std;
 
 #define KEY_LONG             9
 
+#define KEY_ZONE5            0
+#define KEY_ZONE6            0
+#define KEY_ZONE7            0
+#define KEY_ZONE8            0
+
 #define seg_a  7
 #define seg_b 6
 #define seg_c 5
@@ -60,7 +66,7 @@ using namespace std;
 #define seg_db  4
 
 #define IS_IT_NUMBER(x) (x >= '0' && x <= '9')
-#define KEY_BITS(x)  (1 << (x - 1))
+#define KEY_BITS(x)  (1 << x)
 #define KEY_TIME_MS(x)  (x / 30)
 #define KEY_SLIDER_BAR (KEY_BITS(KEY_SLIDER_0) | KEY_BITS(KEY_SLIDER_1) | KEY_BITS(KEY_SLIDER_2) | KEY_BITS(KEY_SLIDER_3) | KEY_BITS(KEY_SLIDER_4) | KEY_BITS(KEY_SLIDER_5) \
                       | KEY_BITS(KEY_SLIDER_6) | KEY_BITS(KEY_SLIDER_7) | KEY_BITS(KEY_SLIDER_8) | KEY_BITS(KEY_SLIDER_9) | KEY_BITS(KEY_SLIDER_P))
