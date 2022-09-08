@@ -56,14 +56,14 @@ using namespace std;
 #define KEY_ZONE7            0
 #define KEY_ZONE8            0
 
-#define seg_a  7
-#define seg_b 6
-#define seg_c 5
-#define seg_d 0
-#define seg_e 1
-#define seg_f 2
-#define seg_g 3
-#define seg_db  4
+#define seg_a  0
+#define seg_b  1 
+#define seg_c  2 
+#define seg_d  3
+#define seg_e  4
+#define seg_f  5
+#define seg_g  6
+#define seg_db 7
 
 #define IS_IT_NUMBER(x) (x >= '0' && x <= '9')
 #define KEY_BITS(x)  (1 << x)
@@ -122,13 +122,18 @@ typedef union
 
 typedef union
 {
-    uint8_t value;
+    uint16_t value;
     struct
     {
-        uint8_t heat : 1;
-        uint8_t no_pan : 1;
-        uint8_t stby : 1;
-        uint8_t burning : 1;
+        uint16_t heat : 1;
+        uint16_t no_pan : 1;
+        uint16_t stby : 1;
+        uint16_t burning : 1;
+        uint16_t bridge_down : 1;
+        uint16_t bridge_right : 1;
+        uint16_t bridge_dl : 1;
+        uint16_t bridge_ul : 1;
+        uint16_t bridge_ur : 1; 
     } bits;
 } Iot_ZoneStatus_t;
 
@@ -284,7 +289,7 @@ public:
     DeviceType_t get_device_type();
     Iot_DeviceStatus_t get_device_status();
     uint8_t get_zone_error(Zone_t zone);
-    uint8_t get_zone_status(Zone_t zone);
+    uint16_t get_zone_status(Zone_t zone);
     bool get_zone_dot_status(Zone_t zone);
     uint8_t get_zone_timer_value(Zone_t zone);
 };

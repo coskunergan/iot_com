@@ -151,7 +151,7 @@ DeviceType_t Iot_Com::get_device_type()
     return device_type;
 }
 /******************************************************/
-uint8_t Iot_Com::get_zone_status(Zone_t zone)
+uint16_t Iot_Com::get_zone_status(Zone_t zone)
 {
     return zone_status[zone].value;
 }
