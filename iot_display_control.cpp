@@ -175,6 +175,7 @@ void Iot_Com::character_handler()
             display_memory[zone] = zone_char[zone];
             zone_status[zone].bits.burning = 0;
             zone_status[zone].bits.stby = 0;
+            zone_status[zone].bits.burning = 1;            
             if(zone_char[zone] == 'U')
             {
                 zone_status[zone].bits.no_pan = 1;
@@ -183,11 +184,20 @@ void Iot_Com::character_handler()
             {
                 zone_status[zone].bits.heat = 1;
             }
+            if((zone_char[zone] >= '0' && zone_char[zone] <= '9') || (zone_char[zone] == 'P'))
+            {
+                zone_status[zone].bits.zone_select = 1;
+            }
+            else if(zone_char[zone] == '-' || zone_char[zone] == 'U')
+            {
+                zone_status[zone].bits.zone_select = 0;
+            }      
         }
         else
         {
             if(++display_blink_count[zone] > IOT_BLINK_TIMEOUT_COUNT)
             {
+                zone_status[zone].bits.zone_select = 0;
                 display_blink_count[zone] = 0;
                 if(zone_char[zone] == 'U')
                 {

@@ -134,6 +134,7 @@ typedef union
         uint16_t bridge_dl : 1;
         uint16_t bridge_ul : 1;
         uint16_t bridge_ur : 1; 
+        uint16_t zone_select : 1; 
     } bits;
 } Iot_ZoneStatus_t;
 
