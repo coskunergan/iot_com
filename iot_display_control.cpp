@@ -173,12 +173,17 @@ void Iot_Com::character_handler()
         {
             display_blink_count[zone] = 0;
             display_memory[zone] = zone_char[zone];
-            zone_status[zone].bits.burning = 0;
             zone_status[zone].bits.stby = 0;
-            zone_status[zone].bits.burning = 1;            
+            zone_status[zone].bits.burning = 1;
+
             if(zone_char[zone] == 'U')
             {
+                zone_level[zone] = LEVEL_0;
                 zone_status[zone].bits.no_pan = 1;
+            }
+            else
+            {
+                zone_status[zone].bits.no_pan = 0;
             }
             if(zone_char[zone] == 'H')
             {
@@ -191,7 +196,12 @@ void Iot_Com::character_handler()
             else if(zone_char[zone] == '-' || zone_char[zone] == 'U')
             {
                 zone_status[zone].bits.zone_select = 0;
-            }      
+            }
+            zone_status[zone].bits.bridge_down = (zone_char[zone] == 'n') ? 1 : 0;
+            zone_status[zone].bits.bridge_right = (zone_char[zone] == 'C') ? 1 : 0;
+            zone_status[zone].bits.bridge_ur = (zone_char[zone] == '<') ? 1 : 0;
+            zone_status[zone].bits.bridge_ul = (zone_char[zone] == '>') ? 1 : 0;
+            zone_status[zone].bits.bridge_dl = (zone_char[zone] == 'L') ? 1 : 0;
         }
         else
         {
@@ -199,30 +209,9 @@ void Iot_Com::character_handler()
             {
                 zone_status[zone].bits.zone_select = 0;
                 display_blink_count[zone] = 0;
-                if(zone_char[zone] == 'U')
-                {
-                    zone_status[zone].bits.no_pan = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.no_pan = 0;
-                }
-                if(zone_char[zone] == 'H')
-                {
-                    zone_status[zone].bits.heat = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.heat = 0;
-                }
-                if(zone_char[zone] == '-')
-                {
-                    zone_status[zone].bits.stby = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.stby = 0;
-                }
+                zone_status[zone].bits.no_pan = (zone_char[zone] == 'U') ? 1 : 0;
+                zone_status[zone].bits.heat = (zone_char[zone] == 'H') ? 1 : 0;
+                zone_status[zone].bits.stby = (zone_char[zone] == '-') ? 1 : 0;
                 if((zone_char[zone] >= '1' && zone_char[zone] <= '9') || (zone_char[zone] == 'P'))
                 {
                     zone_status[zone].bits.burning = 1;
@@ -231,50 +220,11 @@ void Iot_Com::character_handler()
                 {
                     zone_status[zone].bits.burning = 0;
                 }
-                // zone_status[zone].bits.bridge_right = (zone_char[zone] == 'c') ? 1 : 0;
-                // zone_status[zone].bits.bridge_down_and_right = (zone_char[zone] == '<') ? 1 : 0;
-                // zone_status[zone].bits.bridge_down_and_left = (zone_char[zone] == '>') ? 1 : 0;
-                // zone_status[zone].bits.bridge_up_and_right = (zone_char[zone] == 'L') ? 1 : 0;
-                if(zone_char[zone] == 'n')
-                {
-                    zone_status[zone].bits.bridge_down = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.bridge_down = 0;
-                }
-                if(zone_char[zone] == 'C')
-                {
-                    zone_status[zone].bits.bridge_right = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.bridge_right = 0;
-                }                
-                if(zone_char[zone] == '>')
-                {
-                    zone_status[zone].bits.bridge_ul = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.bridge_ul = 0;
-                }
-                if(zone_char[zone] == '<')
-                {
-                    zone_status[zone].bits.bridge_ur = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.bridge_ur = 0;
-                }
-                if(zone_char[zone] == 'L')
-                {
-                    zone_status[zone].bits.bridge_dl = 1;
-                }
-                else
-                {
-                    zone_status[zone].bits.bridge_dl = 0;
-                }
+                zone_status[zone].bits.bridge_down = (zone_char[zone] == 'n') ? 1 : 0;
+                zone_status[zone].bits.bridge_right = (zone_char[zone] == 'C') ? 1 : 0;
+                zone_status[zone].bits.bridge_ur = (zone_char[zone] == '<') ? 1 : 0;
+                zone_status[zone].bits.bridge_ul = (zone_char[zone] == '>') ? 1 : 0;
+                zone_status[zone].bits.bridge_dl = (zone_char[zone] == 'L') ? 1 : 0;
             }
         }
         //-------------- ERROR CASE---------------------
